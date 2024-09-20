@@ -41,14 +41,15 @@ public class Users {
         this.birthday = birthday;
         this.userRole = userRole;
     }
-    public Users(String email, String username, UserRole userRole) {
+    public Users(Long id,String email, String username, UserRole userRole) {
+        this.id = id;
         this.email = email;
         this.username = username;
         this.userRole = userRole;
     }
     //AuthUser로부터 Users 엔티티를 만드는 메서드입니다. 비밀번호제외
     public static Users fromAuthUser(AuthUser authUser) {
-        return new Users(authUser.getEmail(), authUser.getUsername(),authUser.getUserRole());
+        return new Users(authUser.getId(), authUser.getEmail(), authUser.getUsername(),authUser.getUserRole());
     }
 
 

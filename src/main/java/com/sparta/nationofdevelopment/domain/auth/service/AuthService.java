@@ -60,25 +60,28 @@ public class AuthService {
                 savedUser.getEmail(),
                 savedUser.getUsername(),
                 savedUser.getUserRole()
-
         );
 
         return new SignupResponseDto(bearerToken);
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-        Users user = userRepository.findByEmailAndIsDeleted(loginRequestDto.getEmail(),false)
+        Users user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new AuthException("가입되지 않은 이메일입니다."));
+
+        if (user.getIsDeleted()) {
+            throw new AuthException("탈퇴한 회원입니다.");
+        }
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new AuthException("잘못된 비밀번호입니다.");
         }
+
         String bearerToken = jwtUtil.createToken(
                 user.getId(),
                 user.getEmail(),
                 user.getUsername(),
                 user.getUserRole()
-
         );
 
         return new LoginResponseDto(bearerToken);
