@@ -5,6 +5,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Pointcut;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @org.aspectj.lang.annotation.Aspect
 public class Aspect {
@@ -18,7 +20,20 @@ public class Aspect {
      */
     @After("orderServiceMethods()")
     public void orderLogging(JoinPoint joinPoint) {
+        //파라미터 받아오기
+        /**
+         * 1.주문이 생성될 때 어떻게 할 것인가?
+         * 생성되고 나면 저 서비스 메서드에서
+         */
 
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        //요청 시각
+        log.info("요청 시각 : {}",currentTime);
+        //가게 ID
+        log.info("가게 ID : {storeId}");
+        //주문 ID
+        log.info("주문 ID : {orderId}");
     }
 
 

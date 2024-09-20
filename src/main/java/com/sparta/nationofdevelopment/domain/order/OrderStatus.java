@@ -1,5 +1,5 @@
 package com.sparta.nationofdevelopment.domain.order;
 
 public enum OrderStatus {
-    ACCEPTED, REJECTED, DELIVERED, CANCELLED
+    WAITING ,ACCEPTED, REJECTED, DELIVERED, CANCELLED
 }
