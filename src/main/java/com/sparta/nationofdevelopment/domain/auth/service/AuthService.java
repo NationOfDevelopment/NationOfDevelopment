@@ -2,8 +2,11 @@ package com.sparta.nationofdevelopment.domain.auth.service;
 
 import com.sparta.nationofdevelopment.config.JwtUtil;
 import com.sparta.nationofdevelopment.config.PasswordEncoder;
+import com.sparta.nationofdevelopment.domain.auth.dto.request.LoginRequestDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.request.SignupRequestDto;
+import com.sparta.nationofdevelopment.domain.auth.dto.response.LoginResponseDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.response.SignupResponseDto;
+import com.sparta.nationofdevelopment.domain.auth.exception.AuthException;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
@@ -55,9 +58,29 @@ public class AuthService {
         String bearerToken = jwtUtil.createToken(
                 savedUser.getId(),
                 savedUser.getEmail(),
+                savedUser.getUsername(),
                 savedUser.getUserRole()
+
         );
 
         return new SignupResponseDto(bearerToken);
+    }
+
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        Users user = userRepository.findByEmailAndIsDeleted(loginRequestDto.getEmail(),false)
+                .orElseThrow(() -> new AuthException("가입되지 않은 이메일입니다."));
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new AuthException("잘못된 비밀번호입니다.");
+        }
+        String bearerToken = jwtUtil.createToken(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getUserRole()
+
+        );
+
+        return new LoginResponseDto(bearerToken);
     }
 }
