@@ -1,6 +1,8 @@
 package com.sparta.nationofdevelopment.domain.review.service;
 
+import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import com.sparta.nationofdevelopment.domain.review.dto.request.ReviewRequestDto;
 import com.sparta.nationofdevelopment.domain.review.dto.response.ReviewResponseDto;
@@ -26,6 +28,7 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto saveReview(ReviewRequestDto requestDto, AuthUser authUser) {
+
         Users user = userRepository.findByEmail(authUser.getEmail())
                 .orElseThrow(() -> new InvalidRequestException("존재하지 않는 유저입니다."));
 
