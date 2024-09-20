@@ -19,5 +19,9 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> createError(String message,Integer statusCode) {
         return new ApiResponse<>(message,statusCode,null);
     }
+
+    public static <T> ApiResponse<T> onSuccess(T result) {
+        return new ApiResponse<>("Ok", 200, result);
+    }
 }
 
