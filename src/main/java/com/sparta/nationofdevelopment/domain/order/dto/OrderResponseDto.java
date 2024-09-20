@@ -2,7 +2,7 @@ package com.sparta.nationofdevelopment.domain.order.dto;
 
 import com.sparta.nationofdevelopment.domain.order.OrderStatus;
 import com.sparta.nationofdevelopment.domain.order.entity.Cart;
-import com.sparta.nationofdevelopment.domain.order.entity.Order;
+import com.sparta.nationofdevelopment.domain.order.entity.Orders;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ public class OrderResponseDto {
     private final LocalDateTime orderDate;
     private final List<Cart> cartList;
 
-    public OrderResponseDto(Order order , List<Cart> cartList) {
+    public OrderResponseDto(Orders order , List<Cart> cartList) {
         this.orderId = order.getId();
         this.userId = order.getUser().getId();
         this.storeId = order.getStore().getId();

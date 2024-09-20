@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "Orders")
-public class Order extends Timestamped{
+public class Orders extends Timestamped{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private long id;
@@ -30,4 +30,11 @@ public class Order extends Timestamped{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     Store store;
+
+    public Orders(int totalAmount, Users user, Store store, OrderStatus status) {
+        this.totalAmount = totalAmount;
+        this.user = user;
+        this.store = store;
+        this.status = status;
+    }
 }
