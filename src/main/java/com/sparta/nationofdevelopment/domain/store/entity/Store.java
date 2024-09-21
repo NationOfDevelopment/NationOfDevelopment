@@ -34,6 +34,9 @@ public class Store {
     @Column(nullable = false)
     private LocalTime closeTime;
 
+    @Enumerated(EnumType.STRING)
+    private StoreStatus status;
+
     // 유저와의 다대일 관계
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -58,5 +61,10 @@ public class Store {
         this.closeTime = requestDto.getCloseTime();
         this.minOrderMount = requestDto.getMinOrderMount();
         this.user = user;
+        this.status = StoreStatus.OPEN;
+    }
+
+    public void closeStore() {
+        this.status = StoreStatus.CLOSED;
     }
 }
