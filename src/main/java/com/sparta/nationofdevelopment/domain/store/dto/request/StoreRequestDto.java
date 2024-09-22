@@ -19,6 +19,4 @@ public class StoreRequestDto {
     private LocalTime closeTime;
     private int minOrderMount;
     private StoreStatus status;
-
-
 }

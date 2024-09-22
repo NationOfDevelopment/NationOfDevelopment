@@ -3,13 +3,17 @@ package com.sparta.nationofdevelopment.domain.store.service;
 
 import com.sparta.nationofdevelopment.common_entity.ApiResponse;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
+import com.sparta.nationofdevelopment.domain.store.dto.request.StoreClosureRequestDto;
 import com.sparta.nationofdevelopment.domain.store.dto.request.StoreRequestDto;
+import com.sparta.nationofdevelopment.domain.store.dto.response.StoreDetailResponseDto;
 import com.sparta.nationofdevelopment.domain.store.dto.response.StoreResponseDto;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
+import com.sparta.nationofdevelopment.domain.store.entity.StoreStatus;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -38,8 +42,9 @@ public class StoreService {
             throw new IllegalArgumentException("사장님 권한이 없습니다.");
         }
 
+
         // 운영하는 가게 3개 초과 체크
-        if (storeRepository.countByUser(users) >= 3) {
+        if (storeRepository.countByUser(users,StoreStatus.OPEN) >= 3) {
             throw new IllegalArgumentException("최대 3개 운영가능");
         }
 
@@ -78,12 +83,38 @@ public class StoreService {
     }
 
 
+    // 가게 단건 조회
+    public StoreDetailResponseDto getStore(Long storeId){
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException("storeId를 찾을 수 없습니다."));
+
+        // 폐업 상태 확인
+        if(store.getStatus() == StoreStatus.CLOSED){
+            throw new EntityNotFoundException("StoreId가 CLOSE 상태입니다.");
+        }
+        return new StoreDetailResponseDto(store);
+    }
+
+    // 가게 다건 조회
     public List<StoreResponseDto> getStores(String storeName) {
         List<Store> stores = storeRepository.findByStoreName(storeName);
 
         return stores.stream()
                 .map(StoreResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    public StoreResponseDto deleteStore(Long storeId){
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("StoreId를 찾을 수 없습니다."));
+
+        store.closeStore();
+        storeRepository.save(store);
+
+        return new StoreResponseDto(store);
     }
 }
 
