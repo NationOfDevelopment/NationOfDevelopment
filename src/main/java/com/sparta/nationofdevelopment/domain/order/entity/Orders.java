@@ -11,7 +11,6 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "Orders")
 public class Orders extends Timestamped{
@@ -37,6 +36,10 @@ public class Orders extends Timestamped{
         this.totalAmount = totalAmount;
         this.user = user;
         this.store = store;
+        this.status = status;
+    }
+
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 }
