@@ -7,7 +7,6 @@ import com.sparta.nationofdevelopment.domain.menu.dto.MenuRequestDto;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuResponseDto;
 import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
 import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
-import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
-    private final UtilFind utilFind;
 
     /**
      * 메뉴 등록
