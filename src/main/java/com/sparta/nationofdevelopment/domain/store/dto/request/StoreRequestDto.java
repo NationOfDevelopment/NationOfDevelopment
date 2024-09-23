@@ -2,7 +2,6 @@ package com.sparta.nationofdevelopment.domain.store.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.nationofdevelopment.domain.store.entity.StoreStatus;
-import jakarta.persistence.GeneratedValue;
 import lombok.Getter;
 import lombok.Setter;
 

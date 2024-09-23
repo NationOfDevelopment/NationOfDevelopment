@@ -1,9 +1,7 @@
 package com.sparta.nationofdevelopment.domain.store.service;
 
 
-import com.sparta.nationofdevelopment.common_entity.ApiResponse;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
-import com.sparta.nationofdevelopment.domain.store.dto.request.StoreClosureRequestDto;
 import com.sparta.nationofdevelopment.domain.store.dto.request.StoreRequestDto;
 import com.sparta.nationofdevelopment.domain.store.dto.response.StoreDetailResponseDto;
 import com.sparta.nationofdevelopment.domain.store.dto.response.StoreResponseDto;
@@ -15,12 +13,9 @@ import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +39,8 @@ public class StoreService {
 
 
         // 운영하는 가게 3개 초과 체크
-        if (storeRepository.countByUserAndStatus(users,StoreStatus.OPEN) >= 3) {
+        int storeCount = storeRepository.countByUserAndStatus(users,StoreStatus.OPEN);
+            if(storeCount >= 3 ){
             throw new IllegalArgumentException("최대 3개 운영가능");
         }
 
@@ -72,18 +68,13 @@ public class StoreService {
         }
 
         // 가게 정보 업데이트
-        store.setStoreName(requestDto.getStoreName());
-        store.setOpenTime(requestDto.getOpenTime());
-        store.setCloseTime(requestDto.getCloseTime());
-        store.setMinOrderMount(requestDto.getMinOrderMount());
 
-        Store updatedStore = storeRepository.save(store);
-
-        return new StoreResponseDto(updatedStore);
+        store.update(requestDto);
+        storeRepository.save(store);
+        return new StoreResponseDto(store);
     }
 
 
-/*
     // 가게 단건 조회
     public StoreDetailResponseDto getStore(Long storeId){
         Store store = storeRepository.findById(storeId)
@@ -95,7 +86,6 @@ public class StoreService {
         }
         return new StoreDetailResponseDto(store);
     }
-*/
 
     // 가게 다건 조회
     public List<StoreResponseDto> getStores(String storeName) {

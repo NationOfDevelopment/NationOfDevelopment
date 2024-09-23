@@ -6,14 +6,12 @@ import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Store {
@@ -66,5 +64,12 @@ public class Store {
 
     public void closeStore() {
         this.status = StoreStatus.CLOSED;
+    }
+
+    public void update(StoreRequestDto requestDto) {
+        this.storeName = requestDto.getStoreName();
+        this.openTime = requestDto.getOpenTime();
+        this.closeTime = requestDto.getCloseTime();
+        this.minOrderMount = requestDto.getMinOrderMount();
     }
 }
