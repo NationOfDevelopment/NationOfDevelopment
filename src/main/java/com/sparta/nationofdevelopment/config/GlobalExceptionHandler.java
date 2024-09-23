@@ -1,6 +1,9 @@
 package com.sparta.nationofdevelopment.config;
 
 import com.sparta.nationofdevelopment.common_entity.ApiResponse;
+import com.sparta.nationofdevelopment.common_entity.BaseCode;
+import com.sparta.nationofdevelopment.common_entity.ReasonDto;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import jakarta.validation.constraints.Null;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -28,6 +31,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Null>> handleServerException(ServerException ex) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         return getErrorResponse(status, ex.getMessage());
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiResponse<Null>> handleApiException(ApiException ex) {
+        ReasonDto status = ex.getErrorCode().getReasonHttpStatus();
+        return getErrorResponse(status.getHttpStatus(), status.getMessage());
     }
 
     public ResponseEntity<ApiResponse<Null>> getErrorResponse(HttpStatus status, String message) {
