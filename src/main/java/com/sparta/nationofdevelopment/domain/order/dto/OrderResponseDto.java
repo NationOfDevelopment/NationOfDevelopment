@@ -1,7 +1,6 @@
 package com.sparta.nationofdevelopment.domain.order.dto;
 
 import com.sparta.nationofdevelopment.domain.order.OrderStatus;
-import com.sparta.nationofdevelopment.domain.order.entity.Cart;
 import com.sparta.nationofdevelopment.domain.order.entity.Orders;
 import lombok.Getter;
 

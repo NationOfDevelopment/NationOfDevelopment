@@ -19,7 +19,9 @@ public class Orders extends Timestamped{
     @Column(name = "order_id")
     private long id;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
     @Column(name = "total_amount")
     private int totalAmount;
 

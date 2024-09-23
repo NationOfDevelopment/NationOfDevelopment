@@ -10,12 +10,11 @@ import com.sparta.nationofdevelopment.domain.order.dto.OrderStatusResponseDto;
 import com.sparta.nationofdevelopment.domain.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;

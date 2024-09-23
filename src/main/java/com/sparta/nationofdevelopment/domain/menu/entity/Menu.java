@@ -11,7 +11,6 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @Getter
-@NoArgsConstructor
 public class Menu {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

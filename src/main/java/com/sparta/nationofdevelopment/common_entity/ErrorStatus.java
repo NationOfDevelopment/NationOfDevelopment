@@ -35,7 +35,7 @@ public enum ErrorStatus implements BaseCode{
     _NOT_FOUND_MENU(HttpStatus.NOT_FOUND, 404, "해당 메뉴를 찾을 수 없습니다."),
 
     // 가게 예외
-    _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다.");
+    _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다."),
 
 
     //주문 관련 예외
@@ -43,9 +43,8 @@ public enum ErrorStatus implements BaseCode{
     _BAD_REQUEST_INVALID_STATUS_ACCEPTED_OR_REJECTED(HttpStatus.BAD_REQUEST,400, "수락 대기 상태의 주문만 수락하거나 거절할 수 있습니다."),
     _BAD_REQUEST_INVALID_STATUS_INVALID_ORDER(HttpStatus.BAD_REQUEST,400, "진행 상태의 주문만 완료하거나 취소할 수 있습니다."),
     _FORBIDDEN_NO_AUTHORITY_MANAGE_ORDER(HttpStatus.FORBIDDEN,403,"해당 가게 사장님만 해당 주문을 관리할 수 있습니다."),
+    _BAD_REQUEST_CAN_NOT_CHANGE_TO_WAITING(HttpStatus.BAD_REQUEST,400,"진행중인 주문이거나 완료된 주문을 대기 상태로 변경할 수는 없습니다.");
 
-
-    _TEST_ERROR(HttpStatus.NO_CONTENT, 404, "ApiException 예외 처리 테스트");
 
     private final HttpStatus httpStatus;
     private final Integer statusCode;

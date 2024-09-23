@@ -69,6 +69,10 @@ public class OrderService {
             throw new ApiException(ErrorStatus._FORBIDDEN_NO_AUTHORITY_MANAGE_ORDER);
         }
 
+        if(requestDto.getStatus().equals("WAITING")) {
+            throw new ApiException(ErrorStatus._BAD_REQUEST_CAN_NOT_CHANGE_TO_WAITING);
+        }
+
         if((requestDto.getStatus().equals("ACCEPTED") || requestDto.getStatus().equals("REJECTED")) && !foundOrder.getStatus().equals(OrderStatus.WAITING)) {
             throw new ApiException(ErrorStatus._BAD_REQUEST_INVALID_STATUS_ACCEPTED_OR_REJECTED);
         }
@@ -104,9 +108,4 @@ public class OrderService {
                 })
                 .toList();
     }
-
-
-
-
-
 }
