@@ -14,7 +14,7 @@ public class OrderStatusResponseDto {
     private LocalDateTime updatedAt;
 
     public OrderStatusResponseDto(Orders order) {
-        this.storeId = order.getStore().getId();
+        this.storeId = order.getStore().getStoreId();
         this.orderId = order.getId();
         this.status = order.getStatus();
         this.updatedAt = order.getUpdatedAt();

@@ -1,21 +1,22 @@
 package com.sparta.nationofdevelopment.domain.order.service;
 
+import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
-import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
-import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
 import com.sparta.nationofdevelopment.domain.order.OrderStatus;
 import com.sparta.nationofdevelopment.domain.order.dto.*;
 import com.sparta.nationofdevelopment.domain.order.entity.Cart;
 import com.sparta.nationofdevelopment.domain.order.entity.Orders;
+import com.sparta.nationofdevelopment.domain.order.repository.CartRepository;
 import com.sparta.nationofdevelopment.domain.order.repository.OrderRepository;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,30 +24,18 @@ import java.util.List;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
-    private final MenuRepository menuRepository;
-
-    /**
-     * OrderRequestDto에서 장바구니 리스트 반환
-     */
-    public List<Cart> convertToCartList(OrderRequestDto requestDto, AuthUser authUser) {
-        List<Cart> cartList = new ArrayList<>();
-        List<MenuItemDto> menuItemDtos = requestDto.getMenuItems();
-        for (MenuItemDto dto : menuItemDtos) {
-            Menu menu = menuRepository.findByMenuName(dto.getMenuName()).orElseThrow(() -> new InvalidRequestException("해당 메뉴는 존재하지 않습니다."));
-            Cart cart = new Cart(dto, authUser, menu);
-            cartList.add(cart);
-        }
-        return cartList;
-    }
+    private final CartRepository cartRepository;
+    private final CartService cartService;
 
     /**
      * 주문 생성
      * 1. 주문 : 주문Id, 유저Id, 가게Id, 총 가격, 주문 시간 , status 주문 요청으로 변경
      */
+    @Transactional
     public OrderResponseDto create(AuthUser authUser, long storeId, OrderRequestDto requestDto) {
         Users currentUser = Users.fromAuthUser(authUser);
         Store foundStore = storeRepository.findById(storeId).orElseThrow(() -> new InvalidRequestException("해당 가게를 찾을 수 없습니다."));
-        List<Cart> cartList = convertToCartList(requestDto, authUser);
+        List<Cart> cartList = cartService.convertToCartList(requestDto, authUser);
         int totalAmount = 0;
         for (Cart cart : cartList) {
             totalAmount += cart.getAmount();
@@ -54,32 +43,38 @@ public class OrderService {
         Orders order = new Orders(totalAmount, currentUser, foundStore, OrderStatus.WAITING);
 
         Orders savedOrder = orderRepository.save(order);
+        for(Cart cart : cartList) {
+            cart.setOrderId(savedOrder.getId());
+        }
 
-        return new OrderResponseDto(savedOrder, cartList);
+        List<CartDto> cartDtos = cartList.stream().map(CartDto::new).toList();
+
+        return new OrderResponseDto(savedOrder, cartDtos);
     }
 
     /**
      * 주문 상태 변경
      * order_id, 순서 - > waiting -> ACCEPTED/REJECTED -> DELIVERED/CANCELLED
      */
+    @Transactional
     public OrderStatusResponseDto changeStatus(AuthUser authUser, long orderId, OrderStatusRequestDto requestDto) {
         Orders foundOrder = orderRepository.findById(orderId).orElseThrow(
-                ()-> new InvalidRequestException("해당 주문을 찾을 수 없습니다.")
+                ()-> new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER)
         );
 
         Users currentUser = Users.fromAuthUser(authUser);
         Users owner = foundOrder.getStore().getUser();
 
         if(!currentUser.getId().equals(owner.getId())) {
-            throw new InvalidRequestException("해당 가게 사장님만 해당 주문을 관리할 수 있습니다.");
+            throw new ApiException(ErrorStatus._FORBIDDEN_NO_AUTHORITY_MANAGE_ORDER);
         }
 
         if((requestDto.getStatus().equals("ACCEPTED") || requestDto.getStatus().equals("REJECTED")) && !foundOrder.getStatus().equals(OrderStatus.WAITING)) {
-            throw new InvalidRequestException("수락 대기 상태의 주문만 수락하거나 거절할 수 있습니다.");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_INVALID_STATUS_ACCEPTED_OR_REJECTED);
         }
 
         if((requestDto.getStatus().equals("DELIVERED") || requestDto.getStatus().equals("CANCELLED")) && !foundOrder.getStatus().equals(OrderStatus.ACCEPTED)) {
-            throw new InvalidRequestException("현재 진행중인 주문만 완료하거나 취소할 수 있습니다.");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_INVALID_STATUS_INVALID_ORDER);
         }
 
         foundOrder.setStatus(OrderStatus.valueOf(requestDto.getStatus()));
@@ -88,6 +83,30 @@ public class OrderService {
 
         return new OrderStatusResponseDto(savedOrder);
     }
+
+    //가게 별 주문 전체 조회
+    @Transactional
+    public List<OrderResponseDto> findByStoreId(long storeId) {
+        List<Orders> ordersList = orderRepository.findByStore_StoreId(storeId);
+        if(ordersList.isEmpty()) {
+            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER);
+        }
+
+        return ordersList.stream()
+                .map(order -> {
+                    List<Cart> cartList = cartRepository.findByOrderId(order.getId());
+
+                    List<CartDto> cartDtos = cartList.stream()
+                            .map(CartDto::new)
+                            .toList();
+
+                    return new OrderResponseDto(order, cartDtos);
+                })
+                .toList();
+    }
+
+
+
 
 
 }

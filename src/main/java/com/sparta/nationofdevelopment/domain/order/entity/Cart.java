@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 @Table(name = "cart")
@@ -22,6 +21,7 @@ public class Cart extends Timestamped {
     private long id;
     private int quantity;
     private int amount;
+    private long orderId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -36,5 +36,9 @@ public class Cart extends Timestamped {
         this.amount = menu.getAmount()*dto.getQuantity();
         this.user = Users.fromAuthUser(authUser);
         this.menu = menu;
+    }
+
+    public void setOrderId(long orderId) {
+        this.orderId = orderId;
     }
 }

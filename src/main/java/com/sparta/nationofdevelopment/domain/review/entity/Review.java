@@ -1,6 +1,8 @@
 package com.sparta.nationofdevelopment.domain.review.entity;
 
 import com.sparta.nationofdevelopment.common_entity.Timestamped;
+import com.sparta.nationofdevelopment.domain.order.entity.Orders;
+import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,13 +20,13 @@ public class Review extends Timestamped {
     @JoinColumn(name = "user_id")
     private Users user;
 
-/*    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Order order;
+    private Orders order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    private Store store;*/
+    private Store store;
 
     private int stars;
     private String contents;

@@ -11,10 +11,9 @@ import com.sparta.nationofdevelopment.domain.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,5 +32,10 @@ public class OrderController {
                                                             @PathVariable long order_id,
                                                             @Valid @RequestBody OrderStatusRequestDto requestDto) {
         return ApiResponse.onSuccess(orderService.changeStatus(authUser, order_id, requestDto));
+    }
+
+    @GetMapping("/stores/{store_id}/orders")
+    public ApiResponse<List<OrderResponseDto>> findByStoreId(@PathVariable long store_id) {
+        return ApiResponse.onSuccess(orderService.findByStoreId(store_id));
     }
 }

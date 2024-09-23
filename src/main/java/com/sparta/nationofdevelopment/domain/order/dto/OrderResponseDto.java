@@ -16,16 +16,16 @@ public class OrderResponseDto {
     private final int totalAmount;
     private final OrderStatus status;
     private final LocalDateTime orderDate;
-    private final List<Cart> cartList;
+    private final List<CartDto> cartList;
 
-    public OrderResponseDto(Orders order , List<Cart> cartList) {
+    public OrderResponseDto(Orders order , List<CartDto> cartDtoList) {
         this.orderId = order.getId();
         this.userId = order.getUser().getId();
-        this.storeId = order.getStore().getId();
+        this.storeId = order.getStore().getStoreId();
         this.totalAmount = order.getTotalAmount();
         this.status = order.getStatus();
         this.orderDate = order.getCreatedAt();
-        this.cartList = cartList;
+        this.cartList = cartDtoList;
     }
 
 }
