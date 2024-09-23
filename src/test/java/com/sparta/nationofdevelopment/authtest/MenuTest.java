@@ -1,11 +1,15 @@
 package com.sparta.nationofdevelopment.authtest;
 
+import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuRequestDto;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuResponseDto;
 import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
+import com.sparta.nationofdevelopment.domain.menu.enums.MenuStatus;
 import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
 import com.sparta.nationofdevelopment.domain.menu.service.MenuService;
+import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
 import com.sparta.nationofdevelopment.domain.store.dto.request.StoreRequestDto;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
@@ -19,12 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MenuTest {
@@ -33,6 +35,9 @@ public class MenuTest {
 
     @Mock
     StoreRepository storeRepository;
+
+    @Mock
+    UtilFind utilFind;
 
     @InjectMocks
     MenuService menuService;
@@ -47,26 +52,41 @@ public class MenuTest {
         Long storeId = 1L;
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                menuService.saveMenu(authUser, storeId, requestDto)
-        );
+        ApiException e = assertThrows(ApiException.class, () -> {
+           menuService.saveMenu(authUser, storeId, requestDto);
+        });
 
-        assertEquals("사장님만 메뉴를 생성할 수 있습니다.", e.getMessage());
+        assertEquals("메뉴 생성 및 수정은 사장님만 가능합니다.", e.getErrorCode().getReasonHttpStatus().getMessage());
+    }
+
+    @Test
+    void 메뉴_등록_시_로그인_한_유저가_사장님일_때() {
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
+        Long storeId = 1L;
+        MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
+        Menu saveMenu = new Menu(requestDto);
+
+        given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
+        given(menuRepository.save(any(Menu.class))).willReturn(saveMenu);
+
+        assertDoesNotThrow(() -> {
+            menuService.saveMenu(authUser, storeId, requestDto);
+        });
     }
 
     @Test
     void 메뉴_등록_시_가게가_없을_때() {
         AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
-        Long storeId = 1L;
+        Long storeId = 999L;
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
 
         given(storeRepository.findById(storeId)).willReturn(Optional.empty());
 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                menuService.saveMenu(authUser, storeId, requestDto)
-        );
+        ApiException e = assertThrows(ApiException.class, () -> {
+            menuService.saveMenu(authUser, storeId, requestDto);
+        });
 
-        assertEquals("가게를 찾을 수 없습니다.", e.getMessage());
+        assertEquals("가게를 찾을 수 없습니다.", e.getErrorCode().getReasonHttpStatus().getMessage());
     }
 
     @Test
@@ -104,11 +124,11 @@ public class MenuTest {
         given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
         given(menuRepository.findById(menuId)).willReturn(Optional.empty());
 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+        ApiException e = assertThrows(ApiException.class, () ->
                 menuService.updatemenu(authUser, storeId, menuId, requestDto)
         );
 
-        assertEquals("해당 메뉴를 찾을 수 없습니다.", e.getMessage());
+        assertEquals("해당 메뉴를 찾을 수 없습니다.", e.getErrorCode().getReasonHttpStatus().getMessage());
     }
 
     @Test
@@ -145,25 +165,23 @@ public class MenuTest {
      */
     @Test
     void 메뉴_삭제_성공() {
-        long storeId = 1L;
-        long menuId = 1L;
-
+        // Given
         AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
+        Long menuId = 1L;
+        Long storeId = 1L;
+        Menu menu = new Menu("메뉴 이름", 14000, "한식", storeId);
+        menu.delete(); // 초기 상태를 DELETED로 설정
 
-        // 가게 생성
-        Store store = new Store();
-
-        // 삭제할 메뉴
-        Menu menu = new Menu("삭제할 메뉴", 15000, "중식", menuId);
-
-        given(storeRepository.findById(storeId)).willReturn(Optional.of(store));
         given(menuRepository.findById(menuId)).willReturn(Optional.of(menu));
+        given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
 
-        // 메뉴 삭제 호출
+        // When
         menuService.deleteMenu(authUser, menuId, storeId);
 
-        verify(menuRepository, times(1)).delete(menu);
+        // Then
+        assertEquals(MenuStatus.DELETED, menu.getState()); // 상태가 DELETED인지 확인
     }
+
 
 
 }
