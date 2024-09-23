@@ -1,10 +1,11 @@
-package com.sparta.nationofdevelopment.authtest;
+package com.sparta.nationofdevelopment.domain.auth;
 
 import com.sparta.nationofdevelopment.config.JwtUtil;
 import com.sparta.nationofdevelopment.config.PasswordEncoder;
 import com.sparta.nationofdevelopment.domain.auth.dto.request.LoginRequestDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.request.SignupRequestDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.response.LoginResponseDto;
+import com.sparta.nationofdevelopment.domain.auth.exception.AuthException;
 import com.sparta.nationofdevelopment.domain.auth.service.AuthService;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
@@ -178,7 +179,7 @@ public class AuthTest {
         Users user = new Users(
                 "asd@gmail.com",
                 "testusername",
-                "$2a$04$CuceZuvvKqxP8AHhqUYl5.KtyW4Yuek3MUR3Av33c7zjSVfPM9iyy",
+                "encodedpassword",
                 today,
                 UserRole.USER
         );
@@ -187,7 +188,7 @@ public class AuthTest {
         ReflectionTestUtils.setField(user,"id",userId);
 
         given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(rawpassword,"$2a$04$CuceZuvvKqxP8AHhqUYl5.KtyW4Yuek3MUR3Av33c7zjSVfPM9iyy")).
+        given(passwordEncoder.matches(anyString(),anyString())).
                 willReturn(true);
         given(jwtUtil.createToken(userId,user.getEmail(),user.getUsername(),user.getUserRole())).willReturn(anyString());
         LoginResponseDto response = authService.login(requestDto);
@@ -195,6 +196,51 @@ public class AuthTest {
         String bearerToken = response.getBearerToken();
 
         assertNotNull(bearerToken);
+    }
+    @Test
+    public void 탈퇴한회원_조회시_예외처리() {
+        Date today = new Date();
+        Long userId = 1L;
+        Users user = new Users(
+                "asd@gmail.com",
+                "testusername",
+                "encodedpassword",
+                today,
+                UserRole.USER
+        );
+        ReflectionTestUtils.setField(user,"id",userId);
+        ReflectionTestUtils.setField(user,"isDeleted",true);
+
+        given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.of(user));
+
+        AuthException exception = assertThrows(AuthException.class, () -> {
+            authService.login(new LoginRequestDto("asd@gmail.com", ""));
+        });
+
+        assertEquals("탈퇴한 회원입니다.", exception.getMessage());
+    }
+
+    @Test
+    public void 비밀번호를_잘못입력한경우() {
+        Date today = new Date();
+        Long userId = 1L;
+        Users user = new Users(
+                "asd@gmail.com",
+                "testusername",
+                "encodedpassword",
+                today,
+                UserRole.USER
+        );
+        ReflectionTestUtils.setField(user,"id",userId);
+
+        given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(anyString(),anyString())).
+                willReturn(false);
+
+        AuthException exception = assertThrows(AuthException.class, () -> {
+            authService.login(new LoginRequestDto("asd@gmail.com", ""));
+        });
+        assertEquals("잘못된 비밀번호입니다.", exception.getMessage());
     }
 
 }

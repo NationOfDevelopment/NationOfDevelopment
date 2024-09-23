@@ -1,6 +1,5 @@
 package com.sparta.nationofdevelopment.domain.store.repository;
 
-import com.sparta.nationofdevelopment.domain.store.dto.response.StoreResponseDto;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.entity.StoreStatus;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
@@ -15,4 +14,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     int countByUserAndStatus(Users users, StoreStatus status);
     List<Store> findByStoreName(String storeName);
     List<Store> findByStatus(StoreStatus status);
+    List<Store> findAllByUserAndStatus(Users users, StoreStatus status);
 }

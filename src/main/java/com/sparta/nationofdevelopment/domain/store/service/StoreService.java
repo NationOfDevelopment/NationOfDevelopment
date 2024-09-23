@@ -38,7 +38,7 @@ public class StoreService {
                 -> new IllegalArgumentException("인증된 사용자 이메일이 존재하지 않습니다."));
 
         // 권한 체크
-        if (!users.getUserRole().equals(UserRole.ADMIN)) {
+        if (!(users.getUserRole().equals(UserRole.OWNER)||users.getUserRole().equals(UserRole.ADMIN))) {
             throw new IllegalArgumentException("사장님 권한이 없습니다.");
         }
 
@@ -83,7 +83,7 @@ public class StoreService {
     }
 
 
-/*
+
     // 가게 단건 조회
     public StoreDetailResponseDto getStore(Long storeId){
         Store store = storeRepository.findById(storeId)
@@ -95,7 +95,7 @@ public class StoreService {
         }
         return new StoreDetailResponseDto(store);
     }
-*/
+
 
     // 가게 다건 조회
     public List<StoreResponseDto> getStores(String storeName) {
