@@ -5,7 +5,8 @@ import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestExce
 import java.util.Arrays;
 
 public enum UserRole {
-    ADMIN, USER;
+    OWNER, USER,ADMIN;
+    //일반USER,사장님OWNER,개발자ADMIN
 
     public static UserRole of(String role) {
         return Arrays.stream(UserRole.values())
