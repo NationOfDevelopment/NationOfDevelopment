@@ -1,10 +1,13 @@
 package com.sparta.nationofdevelopment.domain.menu.service;
 
+import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuRequestDto;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuResponseDto;
 import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
 import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
+import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
@@ -17,23 +20,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
+    private final UtilFind utilFind;
 
+    /**
+     * 메뉴 등록
+     *
+     * @param authUser
+     * @param storeId
+     * @param requestDto
+     * @return
+     */
     @Transactional
     public MenuResponseDto saveMenu(AuthUser authUser, Long storeId, MenuRequestDto requestDto) {
-
-        if(!authUser.getUserRole().equals(UserRole.ADMIN)) {
-            throw new IllegalArgumentException("사장님만 메뉴를 생성할 수 있습니다.");
+        // 관리자 권한 체크
+        if (!authUser.getUserRole().equals(UserRole.ADMIN)) {
+            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
         }
 
+        // 가게가 없을 때
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("가게를 찾을 수 없습니다."));
-
-//        if(!store.getUser().equals(authUser.getId())) {
-//            throw new IllegalArgumentException("본인 가게에만 메뉴를 등록할 수 있습니다.");
-//        }
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
         Menu newMenu = new Menu(requestDto);
         Menu savedMenu = menuRepository.save(newMenu);
+
         return new MenuResponseDto(
                 savedMenu.getId(),
                 savedMenu.getMenuName(),
@@ -42,23 +52,31 @@ public class MenuService {
         );
     }
 
-    public MenuResponseDto updatemenu(AuthUser authUser,
-                                      Long storeId,
-                                      Long menuId,
-                                      MenuRequestDto requestDto) {
-
-        if(!authUser.getUserRole().equals(UserRole.ADMIN)) {
-            throw new IllegalArgumentException("사장님만 메뉴를 수정할 수 있습니다.");
+    /**
+     * 메뉴 수정
+     *
+     * @param authUser
+     * @param storeId
+     * @param menuId
+     * @param requestDto
+     * @return
+     */
+    public MenuResponseDto updatemenu(AuthUser authUser, Long storeId, Long menuId, MenuRequestDto requestDto) {
+        // 관리자 권한 체크
+        if (!authUser.getUserRole().equals(UserRole.ADMIN)) {
+            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
         }
 
+        // 가게가 없을 때
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("가게를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
         Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴를 찾을 수 없습니다."));
-
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_MENU));
         menu.update(requestDto);
+
         Menu updatedMenu = menuRepository.save(menu);
+
         return new MenuResponseDto(
                 updatedMenu.getId(),
                 updatedMenu.getMenuName(),
@@ -67,18 +85,31 @@ public class MenuService {
         );
     }
 
+    /**
+     * 메뉴 삭제
+     *
+     * @param authUser
+     * @param menuId
+     * @param storeId
+     */
     @Transactional
     public void deleteMenu(AuthUser authUser, Long menuId, Long storeId) {
-        if(!authUser.getUserRole().equals(UserRole.ADMIN)) {
-            throw new IllegalArgumentException("사장님만 메뉴를 삭제할 수 있습니다.");
+        // 관리자 권한 체크
+        if (!authUser.getUserRole().equals(UserRole.ADMIN)) {
+            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
         }
 
+        // 가게가 없을 때
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("가게를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
         Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_MENU));
 
-        menuRepository.delete(menu);
+        menu.delete();
+        menuRepository.save(menu);
     }
+
+
+
 }

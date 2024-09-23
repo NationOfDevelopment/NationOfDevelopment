@@ -43,4 +43,8 @@ public class Menu {
         this.amount = requestDto.getAmount();
         this.category = requestDto.getCategory();
     }
+
+    public void delete() {
+        this.state = MenuStatus.DELETED;
+    }
 }
