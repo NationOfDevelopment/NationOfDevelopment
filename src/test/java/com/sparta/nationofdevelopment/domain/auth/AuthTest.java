@@ -213,6 +213,8 @@ public class AuthTest {
         ReflectionTestUtils.setField(user,"isDeleted",true);
 
         given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(anyString(),anyString())).
+                willReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () -> {
             authService.login(new LoginRequestDto("asd@gmail.com", ""));

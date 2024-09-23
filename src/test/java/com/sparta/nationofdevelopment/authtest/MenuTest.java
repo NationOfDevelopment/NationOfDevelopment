@@ -9,7 +9,6 @@ import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
 import com.sparta.nationofdevelopment.domain.menu.enums.MenuStatus;
 import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
 import com.sparta.nationofdevelopment.domain.menu.service.MenuService;
-import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
 import com.sparta.nationofdevelopment.domain.store.dto.request.StoreRequestDto;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
@@ -36,8 +35,6 @@ public class MenuTest {
     @Mock
     StoreRepository storeRepository;
 
-    @Mock
-    UtilFind utilFind;
 
     @InjectMocks
     MenuService menuService;
