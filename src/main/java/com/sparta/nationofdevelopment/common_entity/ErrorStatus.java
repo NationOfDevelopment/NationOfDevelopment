@@ -16,7 +16,15 @@ public enum ErrorStatus implements BaseCode{
     _FORBIDDEN_TOKEN(HttpStatus.FORBIDDEN, 403, "관리자 권한이 없습니다."),
     _NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, 404, "JWT 토큰이 필요합니다."),
 
-    _TEST_ERROR(HttpStatus.NO_CONTENT, 404, "ApiException 예외 처리 테스트");
+    _TEST_ERROR(HttpStatus.NO_CONTENT, 404, "ApiException 예외 처리 테스트"),
+
+    // 메뉴 예외
+    _AUTH_ADMIN_MENU(HttpStatus.FORBIDDEN, 403, "메뉴 생성 및 수정은 사장님만 가능합니다."),
+    _NOT_FOUND_MENU(HttpStatus.NOT_FOUND, 404, "해당 메뉴를 찾을 수 없습니다."),
+
+    // 가게 예외
+    _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final Integer statusCode;
