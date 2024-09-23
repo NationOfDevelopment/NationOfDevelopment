@@ -28,7 +28,7 @@ public class OrderService {
     /**
      * OrderRequestDto에서 장바구니 리스트 반환
      */
-    public List<Cart> returnToCartList(OrderRequestDto requestDto, AuthUser authUser) {
+    public List<Cart> convertToCartList(OrderRequestDto requestDto, AuthUser authUser) {
         List<Cart> cartList = new ArrayList<>();
         List<MenuItemDto> menuItemDtos = requestDto.getMenuItems();
         for (MenuItemDto dto : menuItemDtos) {
@@ -46,7 +46,7 @@ public class OrderService {
     public OrderResponseDto create(AuthUser authUser, long storeId, OrderRequestDto requestDto) {
         Users currentUser = Users.fromAuthUser(authUser);
         Store foundStore = storeRepository.findById(storeId).orElseThrow(() -> new InvalidRequestException("해당 가게를 찾을 수 없습니다."));
-        List<Cart> cartList = returnToCartList(requestDto, authUser);
+        List<Cart> cartList = convertToCartList(requestDto, authUser);
         int totalAmount = 0;
         for (Cart cart : cartList) {
             totalAmount += cart.getAmount();

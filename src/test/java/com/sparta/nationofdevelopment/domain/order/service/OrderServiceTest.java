@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -48,7 +47,7 @@ public class OrderServiceTest {
     OrderService orderService;
 
     /**
-     * returnToCartList(임시)
+     * convertToCartList(임시)
      * requestDto : menuItemDto 리스트
      * menuItemDto : String menuName, int quantity
      * AuthUser 필요,
@@ -90,7 +89,7 @@ public class OrderServiceTest {
         given(menuRepository.findByMenuName("후라이드")).willReturn(Optional.of(friedChicken));
         given(menuRepository.findByMenuName("양념")).willReturn(Optional.of(saucedChicken));
 
-        List<Cart> result = orderService.returnToCartList(requestDto,testUser);
+        List<Cart> result = orderService.convertToCartList(requestDto,testUser);
 
         /**
          * 1.요청 갯수만큼 카트에 잘 들어갔는지,
@@ -118,10 +117,10 @@ public class OrderServiceTest {
         given(menuRepository.findByMenuName("후라이드")).willReturn(Optional.of(friedChicken));
         given(menuRepository.findByMenuName("양념")).willReturn(Optional.of(saucedChicken));
 
-        List<Cart> cartList = orderService.returnToCartList(requestDto,testUser);
+        List<Cart> cartList = orderService.convertToCartList(requestDto,testUser);
 
         given(storeRepository.findById(1L)).willReturn(Optional.of(store));
-        given(orderService.returnToCartList(requestDto,testUser)).willReturn(cartList);
+        given(orderService.convertToCartList(requestDto,testUser)).willReturn(cartList);
 
         OrderResponseDto response = orderService.create(testUser,1L,requestDto);
 
