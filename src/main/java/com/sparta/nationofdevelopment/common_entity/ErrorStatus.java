@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseCode{
     _TEST_ERROR(HttpStatus.NO_CONTENT, 404, "ApiException 예외 처리 테스트"),
 
     //Auth,USer관련 코드
+    _USERNAME_IS_SAME(HttpStatus.BAD_REQUEST,400,"변경하려는 이름이 전과 동일합니다"),
     _NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND,404,"이메일을 찾을 수 없습니다."),
     _DELETED_USER(HttpStatus.FORBIDDEN,403,"탈퇴한 계정입니다."),
     _PASSWORD_NOT_MATCHES(HttpStatus.BAD_REQUEST,400,"비밀번호가 틀렸습니다."),

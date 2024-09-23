@@ -66,10 +66,14 @@ public class UserService {
     @Transactional
     public void updateUserName(AuthUser authUser, UserInfoUpdateRequestDto requestDto) {
         Users user = getUsers(authUser);
-
         if(requestDto.getNewUserName()==null||requestDto.getNewUserName().trim().isEmpty()) {
             throw new ApiException(ErrorStatus._INVALID_USER_INFO);
         }
+
+        if(requestDto.getNewUserName().equals(user.getUsername())) {
+            throw new ApiException(ErrorStatus._USERNAME_IS_SAME);
+        }
+
         user.updateUserInfo(requestDto.getNewUserName());
 
     }
