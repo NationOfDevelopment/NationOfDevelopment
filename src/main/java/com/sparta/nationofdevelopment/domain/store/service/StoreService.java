@@ -83,7 +83,7 @@ public class StoreService {
     }
 
 
-/*
+
     // 가게 단건 조회
     public StoreDetailResponseDto getStore(Long storeId){
         Store store = storeRepository.findById(storeId)
@@ -95,7 +95,7 @@ public class StoreService {
         }
         return new StoreDetailResponseDto(store);
     }
-*/
+
 
     // 가게 다건 조회
     public List<StoreResponseDto> getStores(String storeName) {
