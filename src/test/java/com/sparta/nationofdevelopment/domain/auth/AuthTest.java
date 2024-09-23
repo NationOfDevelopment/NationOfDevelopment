@@ -7,6 +7,7 @@ import com.sparta.nationofdevelopment.domain.auth.dto.request.SignupRequestDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.response.LoginResponseDto;
 import com.sparta.nationofdevelopment.domain.auth.exception.AuthException;
 import com.sparta.nationofdevelopment.domain.auth.service.AuthService;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
@@ -50,10 +51,10 @@ public class AuthTest {
                 "user",
                 today
         );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
-        assertEquals(exception.getMessage(), "이메일 형식이 올바르지 않습니다.");
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(), "이메일 형식이 올바르지 않습니다.");
     }
 
     @ParameterizedTest
@@ -103,10 +104,10 @@ public class AuthTest {
                 "user",
                 today
         );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
-        assertEquals(exception.getMessage(), "비밀번호는 최소 8자 이상이어야 하며, 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함해야 합니다.");
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(), "비밀번호는 최소 8자 이상이어야 하며, 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함해야 합니다.");
     }
 
     @Test
@@ -138,10 +139,10 @@ public class AuthTest {
                 today
         );
         given(userRepository.findByEmail(anyString())).willReturn(Optional.of(new Users()));
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
-        assertEquals(exception.getMessage(), "중복된 Email 입니다.");
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(), "중복된 이메일입니다.");
     }
 
     @Test
@@ -213,11 +214,11 @@ public class AuthTest {
 
         given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.of(user));
 
-        AuthException exception = assertThrows(AuthException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.login(new LoginRequestDto("asd@gmail.com", ""));
         });
 
-        assertEquals("탈퇴한 회원입니다.", exception.getMessage());
+        assertEquals("탈퇴한 계정입니다.", exception.getErrorCode().getReasonHttpStatus().getMessage());
     }
 
     @Test
@@ -237,10 +238,10 @@ public class AuthTest {
         given(passwordEncoder.matches(anyString(),anyString())).
                 willReturn(false);
 
-        AuthException exception = assertThrows(AuthException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.login(new LoginRequestDto("asd@gmail.com", ""));
         });
-        assertEquals("잘못된 비밀번호입니다.", exception.getMessage());
+        assertEquals("비밀번호가 틀렸습니다.", exception.getErrorCode().getReasonHttpStatus().getMessage());
     }
 
 }

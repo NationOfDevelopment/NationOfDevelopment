@@ -1,6 +1,7 @@
 package com.sparta.nationofdevelopment.domain.user;
 
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.entity.StoreStatus;
@@ -100,11 +101,11 @@ public class UserTest {
 
         given(userRepository.findByEmail(authUser.getEmail())).willReturn(Optional.empty());
 
-        InvalidRequestException exception = assertThrows(InvalidRequestException.class,()-> {
+        ApiException exception = assertThrows(ApiException.class,()-> {
                     userService.getUserInfo(authUser);
                 });
 
-        assertEquals("Invalid email",exception.getMessage());
+        assertEquals("이메일을 찾을 수 없습니다.",exception.getErrorCode().getReasonHttpStatus().getMessage());
     }
 
 }
