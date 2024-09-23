@@ -33,7 +33,7 @@ public class MenuService {
     @Transactional
     public MenuResponseDto saveMenu(AuthUser authUser, Long storeId, MenuRequestDto requestDto) {
         // 관리자 권한 체크
-        if (!authUser.getUserRole().equals(UserRole.ADMIN)) {
+        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
             throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
         }
 
@@ -63,7 +63,7 @@ public class MenuService {
      */
     public MenuResponseDto updatemenu(AuthUser authUser, Long storeId, Long menuId, MenuRequestDto requestDto) {
         // 관리자 권한 체크
-        if (!authUser.getUserRole().equals(UserRole.ADMIN)) {
+        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
             throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
         }
 
@@ -95,7 +95,7 @@ public class MenuService {
     @Transactional
     public void deleteMenu(AuthUser authUser, Long menuId, Long storeId) {
         // 관리자 권한 체크
-        if (!authUser.getUserRole().equals(UserRole.ADMIN)) {
+        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
             throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
         }
 
