@@ -18,6 +18,7 @@ public enum ErrorStatus implements BaseCode{
     _NO_MORE_STORE(HttpStatus.BAD_REQUEST,400,"최대 3개 운영가능"),
 
     _TEST_ERROR(HttpStatus.NO_CONTENT, 404, "ApiException 예외 처리 테스트"),
+
     //Auth,USer관련 코드
     _NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND,404,"이메일을 찾을 수 없습니다."),
     _DELETED_USER(HttpStatus.FORBIDDEN,403,"탈퇴한 계정입니다."),
@@ -27,6 +28,15 @@ public enum ErrorStatus implements BaseCode{
     _INVALID_PASSWORD_FORM(HttpStatus.BAD_REQUEST,400,"비밀번호는 최소 8자 이상이어야 하며, 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함해야 합니다."),
     _INVALID_USER_INFO(HttpStatus.BAD_REQUEST,400,"변경하려는 정보가 잘못되었습니다."),
     _INVALID_BIRTHDAY(HttpStatus.BAD_REQUEST,400,"잘못된 생일 값입니다");
+
+
+    // 메뉴 예외
+    _AUTH_ADMIN_MENU(HttpStatus.FORBIDDEN, 403, "메뉴 생성 및 수정은 사장님만 가능합니다."),
+    _NOT_FOUND_MENU(HttpStatus.NOT_FOUND, 404, "해당 메뉴를 찾을 수 없습니다."),
+
+    // 가게 예외
+    _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final Integer statusCode;
