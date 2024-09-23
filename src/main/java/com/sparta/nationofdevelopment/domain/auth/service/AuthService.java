@@ -1,12 +1,13 @@
 package com.sparta.nationofdevelopment.domain.auth.service;
 
+import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.config.JwtUtil;
 import com.sparta.nationofdevelopment.config.PasswordEncoder;
 import com.sparta.nationofdevelopment.domain.auth.dto.request.LoginRequestDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.request.SignupRequestDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.response.LoginResponseDto;
 import com.sparta.nationofdevelopment.domain.auth.dto.response.SignupResponseDto;
-import com.sparta.nationofdevelopment.domain.auth.exception.AuthException;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
@@ -35,12 +36,16 @@ public class AuthService {
 
         // 이메일 형식 확인
         if(!requestDto.isEmailValid()) {
-            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+            throw new ApiException(ErrorStatus._INVALID_EMAIL_FORM);
         }
 
         // 비밀번호 형식 확인
         if (!requestDto.isPasswordValid()) {
-            throw new IllegalArgumentException("비밀번호는 최소 8자 이상이어야 하며, 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함해야 합니다.");
+            throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
+        }
+
+        if (!requestDto.isBirthdayValid()) {
+            throw new ApiException(ErrorStatus._INVALID_BIRTHDAY);
         }
 
         String password = passwordEncoder.encode(requestDto.getPassword());
@@ -48,7 +53,7 @@ public class AuthService {
         // email 중복확인, email: unique=true
         Optional<Users> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
+            throw new ApiException(ErrorStatus._DUPLICATED_EMAIL);
         }
 
         Users user = new Users(email,username, password,birthday,userRole);
@@ -67,14 +72,14 @@ public class AuthService {
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Users user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new AuthException("가입되지 않은 이메일입니다."));
-
-        if (user.getIsDeleted()) {
-            throw new AuthException("탈퇴한 회원입니다.");
-        }
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_EMAIL));
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            throw new AuthException("잘못된 비밀번호입니다.");
+            throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
+        }
+
+        if (user.getIsDeleted()) {
+            throw new ApiException(ErrorStatus._DELETED_USER);
         }
 
         String bearerToken = jwtUtil.createToken(

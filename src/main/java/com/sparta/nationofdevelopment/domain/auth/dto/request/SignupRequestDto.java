@@ -74,5 +74,11 @@ public class SignupRequestDto {
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         return Pattern.matches(passwordRegex, this.password);
     }
+
+    public boolean isBirthdayValid() {
+        //생일은 오늘보다 무조건 전이여야합니다.
+        Date now = new Date();
+        return birthday.before(now);
+    }
 }
 

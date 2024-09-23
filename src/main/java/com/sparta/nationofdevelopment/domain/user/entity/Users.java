@@ -1,5 +1,6 @@
 package com.sparta.nationofdevelopment.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import jakarta.persistence.*;
@@ -25,6 +26,7 @@ public class Users {
     private String username;
 
     @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy.MM.dd")
     private Date birthday;
 
     @Enumerated(EnumType.STRING)
@@ -46,6 +48,22 @@ public class Users {
         this.email = email;
         this.username = username;
         this.userRole = userRole;
+    }
+
+    public void updateUserInfo(String username, Date birthday) {
+        this.username = username;
+        this.birthday = birthday;
+    }
+
+    public void updateUserInfo(String username) {
+        this.username = username;
+    }
+
+    public void updateUserInfo(Date birthday) {
+        this.birthday = birthday;
+    }
+    public void updatePassword(String password) {
+        this.password = password;
     }
     //AuthUser로부터 Users 엔티티를 만드는 메서드입니다. 비밀번호제외
     public static Users fromAuthUser(AuthUser authUser) {
