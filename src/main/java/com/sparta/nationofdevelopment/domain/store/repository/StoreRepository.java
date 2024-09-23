@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    int countByUser(Users users, StoreStatus status);
+    int countByUserAndStatus(Users users, StoreStatus status);
     List<Store> findByStoreName(String storeName);
     List<Store> findByStatus(StoreStatus status);
 }

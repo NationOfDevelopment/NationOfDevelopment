@@ -44,7 +44,7 @@ public class StoreService {
 
 
         // 운영하는 가게 3개 초과 체크
-        if (storeRepository.countByUser(users,StoreStatus.OPEN) >= 3) {
+        if (storeRepository.countByUserAndStatus(users,StoreStatus.OPEN) >= 3) {
             throw new IllegalArgumentException("최대 3개 운영가능");
         }
 
@@ -83,6 +83,7 @@ public class StoreService {
     }
 
 
+/*
     // 가게 단건 조회
     public StoreDetailResponseDto getStore(Long storeId){
         Store store = storeRepository.findById(storeId)
@@ -94,6 +95,7 @@ public class StoreService {
         }
         return new StoreDetailResponseDto(store);
     }
+*/
 
     // 가게 다건 조회
     public List<StoreResponseDto> getStores(String storeName) {
