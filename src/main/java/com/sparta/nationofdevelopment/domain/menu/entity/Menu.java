@@ -20,7 +20,6 @@ public class Menu {
     private MenuStatus state;
 
     private String category;
-    private Long storeId;
 
     @ManyToOne
     @JoinColumn(name = "store_id")
