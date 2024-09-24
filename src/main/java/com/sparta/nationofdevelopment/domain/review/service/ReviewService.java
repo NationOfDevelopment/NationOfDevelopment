@@ -3,6 +3,7 @@ package com.sparta.nationofdevelopment.domain.review.service;
 import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
+import com.sparta.nationofdevelopment.domain.order.OrderStatus;
 import com.sparta.nationofdevelopment.domain.order.entity.Orders;
 import com.sparta.nationofdevelopment.domain.order.repository.OrderRepository;
 import com.sparta.nationofdevelopment.domain.review.dto.request.ReviewRequestDto;
@@ -52,6 +53,10 @@ public class ReviewService {
 
         if (order.getUser() != user) {
             throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_ORDERER);
+        }
+        // 완료된 주문만 리뷰 작성 가능
+        if (order.getStatus() != OrderStatus.ACCEPTED) {
+            throw new ApiException(ErrorStatus._BAD_REQUEST_ORDER_STATUS);
         }
         // 이미 리뷰를 작성한 경우
         reviewRepository.findReviewByOrder_Id(orderId).ifPresent((r) -> {throw new ApiException(ErrorStatus._BAD_REQUEST_DUP_REVIEW);});
