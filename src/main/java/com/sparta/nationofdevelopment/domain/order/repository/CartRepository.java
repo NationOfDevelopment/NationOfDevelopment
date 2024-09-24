@@ -20,8 +20,17 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("SELECT c FROM Cart c WHERE c.orderId IN :orderIds")
     List<Cart> findCartsByOrderIds(@Param("orderIds") List<Long>orderIds);
 
-    List<Cart> findByUser_Id(long userId);
+    @Query("SELECT c FROM Cart c WHERE c.user.id = :userId AND c.menu.id = :menuId AND c.orderId = 0")
+    Optional<Cart> findByUserIdAndMenuIdAndOrderIdIsZero(@Param("userId") Long userId, @Param("menuId") Long menuId);
 
-    Optional<Cart> findByUser_idAndMenu_id(Long id, Long id1);
+    //주문이 확정되지 않은 장바구니 리스트를 불러오기
+    @Query("SELECT c FROM Cart c WHERE c.user.id = :userId AND c.orderId = 0")
+    List<Cart> findByUserIdAndOrderIdIsZero(@Param("userId") Long userId);
+
+    //주문이 확정된 장바구니는 조회하지 않기
+    @Query("SELECT c FROM Cart c WHERE c.user.id = :userId AND c.orderId != 0")
+    List<Cart> findByUserIdAndOrderIdNotZero(@Param("userId") Long userId);
+
+
 }
 

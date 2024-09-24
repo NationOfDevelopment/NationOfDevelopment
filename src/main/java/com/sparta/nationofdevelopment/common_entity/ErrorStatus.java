@@ -40,7 +40,7 @@ public enum ErrorStatus implements BaseCode{
     _BAD_REQUEST_STORE_CLOSED(HttpStatus.BAD_REQUEST,400,"현재 영업시간이 아닙니다."),
 
 
-    //주문 관련 예외
+    //주문/장바구니 관련 예외
     _BAD_REQUEST_NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, 400, "해당 주문을 찾을 수 없습니다."),
     _BAD_REQUEST_INVALID_STATUS_ACCEPTED_OR_REJECTED(HttpStatus.BAD_REQUEST,400, "수락 대기 상태의 주문만 수락하거나 거절할 수 있습니다."),
     _BAD_REQUEST_INVALID_STATUS_INVALID_ORDER(HttpStatus.BAD_REQUEST,400, "진행 상태의 주문만 완료하거나 취소할 수 있습니다."),
@@ -49,6 +49,7 @@ public enum ErrorStatus implements BaseCode{
     _BAD_REQUEST_CAN_NOT_CHANGE_TO_WAITING(HttpStatus.BAD_REQUEST,400,"진행중인 주문이거나 완료된 주문을 대기 상태로 변경할 수는 없습니다."),
     _FORBIDDEN_DELETE_CART(HttpStatus.FORBIDDEN,403,"해당 장바구니를 삭제할 수 있는 권한이 없습니다."),
     _BAD_REQUEST_DUPLICATE_CART_ITEM(HttpStatus.BAD_REQUEST,400,"같은 가게의 같은 메뉴를 장바구니에 넣을 수 업습니다."),
+    _BAD_REQUEST_UNABLE_TO_DELETE_CART(HttpStatus.BAD_REQUEST,400,"현재 진행중인 주문으로 바뀐 장바구니는 삭제할 수 없습니다."),
     _BAD_REQUEST_NOT_FOUND_CART(HttpStatus.BAD_REQUEST,400,"해당 장바구니를 찾을 수 없습니다.");
 
 

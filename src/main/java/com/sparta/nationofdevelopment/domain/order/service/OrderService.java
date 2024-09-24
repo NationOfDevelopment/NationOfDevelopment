@@ -45,7 +45,7 @@ public class OrderService {
         Store foundStore = finder.findStoreByStoreId(storeId);
         validateIsStoreOpen(foundStore);
 
-        List<Cart> cartList = cartRepository.findByUser_Id(currentUser.getId());
+        List<Cart> cartList = cartRepository.findByUserIdAndOrderIdIsZero(currentUser.getId());
 
         int totalAmount = calculateTotalAmount(cartList);
         validateMinOrderAmount(foundStore,totalAmount);
