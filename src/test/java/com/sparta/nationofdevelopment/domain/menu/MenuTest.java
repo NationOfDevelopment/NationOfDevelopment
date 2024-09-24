@@ -1,7 +1,6 @@
-package com.sparta.nationofdevelopment.authtest;
+package com.sparta.nationofdevelopment.domain.menu;
 
 import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
-import com.sparta.nationofdevelopment.domain.common.annotation.Auth;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuRequestDto;
@@ -13,14 +12,12 @@ import com.sparta.nationofdevelopment.domain.menu.service.MenuService;
 
 
 import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
-import com.sparta.nationofdevelopment.domain.store.dto.request.StoreRequestDto;
 
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.entity.StoreStatus;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
-import jdk.jshell.execution.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,12 +26,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MenuTest {

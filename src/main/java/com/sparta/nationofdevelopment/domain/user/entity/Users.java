@@ -21,7 +21,7 @@ public class Users {
     @Column(nullable = false, unique = true,length = 50)
     private String email;
 
-    @Column(nullable = false,length = 50)
+    @Column(nullable = false,length = 20)
     private String username;
 
     @Temporal(TemporalType.DATE)

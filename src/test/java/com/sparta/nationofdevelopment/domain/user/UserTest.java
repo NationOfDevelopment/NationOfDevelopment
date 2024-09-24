@@ -120,9 +120,7 @@ public class UserTest {
 
     @Test
     public void nameCheck_정상작동() {
-        Date today = new Date();
-        UserInfoUpdateRequestDto requestDto = new UserInfoUpdateRequestDto("newName", today);
-        boolean check = userService.userNameCheck(requestDto);
+        boolean check = userService.userNameCheck("newname");
 
         assertTrue(check);
     }
@@ -130,9 +128,8 @@ public class UserTest {
     @ParameterizedTest
     @NullAndEmptySource
     public void nameCheck_이름이_없는경우(String newName) {
-        Date today = new Date();
-        UserInfoUpdateRequestDto requestDto = new UserInfoUpdateRequestDto(newName, today);
-        boolean check = userService.userNameCheck(requestDto);
+
+        boolean check = userService.userNameCheck(newName);
 
         assertFalse(check);
     }
