@@ -31,15 +31,10 @@ public class Review extends Timestamped {
     private int stars;
     private String contents;
 
-    public Review(Users user, Store store, int stars, String contents) {
+    public Review(Users user, Store store, Orders order, int stars, String contents) {
         this.user = user;
         this.store = store;
-        this.stars = stars;
-        this.contents = contents;
-    }
-
-    public Review(Users user, int stars, String contents) {
-        this.user = user;
+        this.order = order;
         this.stars = stars;
         this.contents = contents;
     }
