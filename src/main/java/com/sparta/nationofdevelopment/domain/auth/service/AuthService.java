@@ -38,7 +38,6 @@ public class AuthService {
         if(!requestDto.isEmailValid()) {
             throw new ApiException(ErrorStatus._INVALID_EMAIL_FORM);
         }
-
         // 비밀번호 형식 확인
         if (!requestDto.isPasswordValid()) {
             throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
@@ -48,13 +47,16 @@ public class AuthService {
             throw new ApiException(ErrorStatus._INVALID_BIRTHDAY);
         }
 
-        String password = passwordEncoder.encode(requestDto.getPassword());
-
-        // email 중복확인, email: unique=true
         Optional<Users> checkEmail = userRepository.findByEmail(email);
+
         if (checkEmail.isPresent()) {
             throw new ApiException(ErrorStatus._DUPLICATED_EMAIL);
         }
+        String password = passwordEncoder.encode(requestDto.getPassword());
+
+        // email 중복확인, email: unique=true
+
+
 
         Users user = new Users(email,username, password,birthday,userRole);
 
@@ -74,12 +76,11 @@ public class AuthService {
         Users user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_EMAIL));
 
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
-        }
-
         if (user.getIsDeleted()) {
             throw new ApiException(ErrorStatus._DELETED_USER);
+        }
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
         }
 
         String bearerToken = jwtUtil.createToken(

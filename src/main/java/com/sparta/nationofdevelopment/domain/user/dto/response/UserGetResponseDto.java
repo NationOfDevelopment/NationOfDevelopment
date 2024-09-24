@@ -1,5 +1,6 @@
 package com.sparta.nationofdevelopment.domain.user.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import jakarta.persistence.*;
@@ -19,13 +20,18 @@ public class UserGetResponseDto {
     private Date birthday;
     private UserRole userRole;
     //사장님전용
-    private Integer storeCount=null;
-    private List<String> storeList=null;
+    private Integer storeCount;
+    private List<String> storeList;
 
     public UserGetResponseDto(String email, String username, Date birthday, UserRole userRole) {
         this.email = email;
         this.username = username;
         this.birthday = birthday;
         this.userRole = userRole;
+    }
+
+    public void addOwnerInfo(Integer storeCount, List<String> storeList) {
+        this.storeCount = storeCount;
+        this.storeList = storeList;
     }
 }

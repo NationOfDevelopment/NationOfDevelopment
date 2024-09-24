@@ -9,4 +9,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class UserInfoUpdateRequestDto {
     private String newUserName;
+    private Date newUserBirthday;
+
+    public UserInfoUpdateRequestDto(String newUserName, Date newUserBirthday) {
+        this.newUserName = newUserName;
+        this.newUserBirthday = newUserBirthday;
+    }
 }
