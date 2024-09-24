@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
 import java.util.Optional;
@@ -73,8 +74,8 @@ public class MenuTest {
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
 
         Users owner = new Users(userId, "test@naver.com", "hi", UserRole.OWNER);
-        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
-
+        Store store = new Store( "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+        ReflectionTestUtils.setField(store,"storeId",1L);
         Menu newMenu = new Menu(requestDto, store);
 
         given(utilFind.storeFindById(storeId)).willReturn(store);
@@ -107,8 +108,8 @@ public class MenuTest {
         Users user = Users.fromAuthUser(authUser);
 
         long storeId = 1L;
-        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, Users.fromAuthUser(authUser));
-
+        Store store = new Store( "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, Users.fromAuthUser(authUser));
+        ReflectionTestUtils.setField(store,"storeId",1L);
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
         Menu saveMenu = new Menu(requestDto, store);
 
@@ -136,8 +137,8 @@ public class MenuTest {
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
 
         Users owner = new Users(1L, "test@naver.com", "hi", UserRole.OWNER);
-        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
-
+        Store store = new Store( "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+        ReflectionTestUtils.setField(store,"storeId",1L);
         given(utilFind.storeFindById(storeId)).willReturn(store);
         given(utilFind.menuFindById(menuId)).willThrow(new ApiException(ErrorStatus._NOT_FOUND_MENU));
 
@@ -158,8 +159,8 @@ public class MenuTest {
 
         // 가게 생성
         Users owner = new Users(userId, "test@naver.com", "hi", UserRole.OWNER);
-        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
-
+        Store store = new Store( "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+        ReflectionTestUtils.setField(store,"storeId",1L);
         // 기존 메뉴
         MenuRequestDto requestDto = new MenuRequestDto("수정 된 메뉴 이름", 16000, "양식");
         Menu prevMenu = new Menu(requestDto, store);
@@ -191,8 +192,8 @@ public class MenuTest {
         AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
 
         Users owner = new Users(userId, "test@naver.com", "hi", UserRole.OWNER);
-        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
-
+        Store store = new Store( "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+        ReflectionTestUtils.setField(store,"storeId",1L);
         MenuRequestDto requestDto = new MenuRequestDto("수정 된 메뉴 이름", 16000, "양식");
         Menu menu = new Menu(requestDto, store);
         menu.delete(); // 초기 상태를 DELETED로 설정
