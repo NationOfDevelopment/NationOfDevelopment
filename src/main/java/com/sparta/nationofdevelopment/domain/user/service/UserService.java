@@ -50,7 +50,6 @@ public class UserService {
         Integer storeCount = storeRepository.countByUserAndStatus(user, StoreStatus.OPEN);
         List<Store> storeList = storeRepository.findAllByUserAndStatus(user, StoreStatus.OPEN);
         List<String> storeNames = storeList.stream().map(Store::getStoreName).toList();
-        log.info("UserRole.OWNER");
         userGetResponseDto.addOwnerInfo(storeCount,storeNames);
         return userGetResponseDto;
     }
