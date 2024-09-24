@@ -24,6 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.sparta.nationofdevelopment.domain.user.UserTest.getDate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -69,10 +70,10 @@ public class AuthTest {
                 "user",
                 today
         );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
-        assertEquals(exception.getMessage(), "이름은 공백 또는 null일 수 없습니다.");
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(), "이메일 형식이 올바르지 않습니다.");
     }
 
     @ParameterizedTest
@@ -87,10 +88,10 @@ public class AuthTest {
                 "user",
                 today
         );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
-        assertEquals(exception.getMessage(), "비밀번호는 공백 또는 null일 수 없습니다.");
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(), "비밀번호는 최소 8자 이상이어야 하며, 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함해야 합니다.");
     }
 
     @Test
@@ -143,6 +144,22 @@ public class AuthTest {
             authService.signup(requestDto);
         });
         assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(), "중복된 이메일입니다.");
+    }
+    @Test
+    public void 회원가입시_생일이_잘못된경우() {
+        Date time = getDate(2025, 7, 20);
+        SignupRequestDto requestDto = new SignupRequestDto(
+                "asd@gmail.com",
+                "testusername",
+                "Multiverse22@",
+                "user",
+                time
+        );
+        ApiException exception = assertThrows(ApiException.class, () -> {
+            authService.signup(requestDto);
+        });
+
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(),"잘못된 생일 값입니다");
     }
 
     @Test
@@ -213,8 +230,6 @@ public class AuthTest {
         ReflectionTestUtils.setField(user,"isDeleted",true);
 
         given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(anyString(),anyString())).
-                willReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () -> {
             authService.login(new LoginRequestDto("asd@gmail.com", ""));
