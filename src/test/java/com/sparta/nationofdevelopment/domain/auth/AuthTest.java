@@ -12,6 +12,7 @@ import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestExce
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
+import com.sparta.nationofdevelopment.domain.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,6 +41,8 @@ public class AuthTest {
     private JwtUtil jwtUtil;
     @InjectMocks
     private AuthService authService;
+    @Mock
+    private UserService userService;
 
     @Test
     public void 회원가입시_email이_올바르지않으면() {
@@ -122,15 +125,16 @@ public class AuthTest {
                 "",
                 today
         );
-        InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> {
+        given(userService.userNameCheck(anyString())).willReturn(true);
+        ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
-        assertEquals(exception.getMessage(), "유효하지 않은 UserRole");
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(),"유저 권한이 없습니다." );
     }
 
     @Test
     public void 회원가입시_중복이메일이_존재한다면() {
-        Date today = new Date();
+        Date today = getDate(1999, 7, 20);
 
         SignupRequestDto requestDto = new SignupRequestDto(
                 "asd@gmail.com",
@@ -140,6 +144,7 @@ public class AuthTest {
                 today
         );
         given(userRepository.findByEmail(anyString())).willReturn(Optional.of(new Users()));
+        given(userService.userNameCheck(anyString())).willReturn(true);
         ApiException exception = assertThrows(ApiException.class, () -> {
             authService.signup(requestDto);
         });
@@ -182,6 +187,7 @@ public class AuthTest {
                 );
         given(userRepository.findByEmail("asd@gmail.com")).willReturn(Optional.empty());
         given(userRepository.save(any(Users.class))).willReturn(user);
+        given(userService.userNameCheck(anyString())).willReturn(true);
 
         authService.signup(requestDto);
         Users saveduser = userRepository.save(user);

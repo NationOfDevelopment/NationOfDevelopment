@@ -11,11 +11,11 @@ import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
+import com.sparta.nationofdevelopment.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -26,31 +26,25 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
-
         // 이메일 형식 확인
         IsValid(requestDto);
-
-        String email = requestDto.getEmail();
-        Optional<Users> checkEmail = userRepository.findByEmail(email);
-
+        Optional<Users> checkEmail = userRepository.findByEmail(requestDto.getEmail());
         if (checkEmail.isPresent()) {
             throw new ApiException(ErrorStatus._DUPLICATED_EMAIL);
         }
 
-        String username = requestDto.getUsername();
         UserRole userRole = UserRole.of(requestDto.getUserRole());
-        Date birthday = requestDto.getBirthday();
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
-        String password = passwordEncoder.encode(requestDto.getPassword());
-
-        // email 중복확인, email: unique=true
-
-
-
-        Users user = new Users(email,username, password,birthday,userRole);
+        Users user = new Users(requestDto.getEmail(),
+                requestDto.getUsername(),
+                encodedPassword,
+                requestDto.getBirthday(),
+                userRole);
 
         Users savedUser = userRepository.save(user);
 
@@ -74,6 +68,9 @@ public class AuthService {
 
         if (!requestDto.isBirthdayValid()) {
             throw new ApiException(ErrorStatus._INVALID_BIRTHDAY);
+        }
+        if (!userService.userNameCheck(requestDto.getUsername())) {
+            throw new ApiException(ErrorStatus._INVALID_USER_NAME);
         }
     }
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {

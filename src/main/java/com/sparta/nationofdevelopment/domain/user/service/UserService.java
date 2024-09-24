@@ -57,7 +57,7 @@ public class UserService {
     public void updateUserInfo(AuthUser authUser,UserInfoUpdateRequestDto requestDto) {
         Users user = getUsersCheckDeleted(authUser);
         //이름이 문제없으면 nameCheck는 true
-        boolean nameCheck = userNameCheck(requestDto);
+        boolean nameCheck = userNameCheck(requestDto.getNewUserName());
         boolean birthdayCheck = userBirthdayCheck(requestDto);
 
         if(nameCheck&&birthdayCheck) {
@@ -115,17 +115,15 @@ public class UserService {
         }
         user.deleteUser();
     }
-    public boolean userNameCheck(UserInfoUpdateRequestDto requestDto) {
-        if(
-                requestDto.getNewUserName()==null||
-                requestDto.getNewUserName().trim().isEmpty()) {
+    public boolean userNameCheck(String newName) {
+        if (newName==null||newName.trim().isEmpty()) {
             return false;
         }
+        String nameRegex="^[a-zA-Z0-9]{3,20}$";
+        if (!newName.matches(nameRegex)) {
+            throw new ApiException(ErrorStatus._INVALID_USER_NAME);
+        }
         return true;
-    }
-    public Users getUsers(AuthUser authUser) {
-        return userRepository.findByEmail(authUser.getEmail()).orElseThrow(()->
-                new ApiException(ErrorStatus._NOT_FOUND_EMAIL));
     }
     public Users getUsersCheckDeleted(AuthUser authUser) {
         Users user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(()->
