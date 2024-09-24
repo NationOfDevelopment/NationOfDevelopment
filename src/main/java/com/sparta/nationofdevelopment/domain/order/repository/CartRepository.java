@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     List<Cart> findByOrderId(long orderId);
 
-    @Query("SELECT c FROM Cart c WHERE c.orderId IS NULL AND c.createdAt < :timeLimit")
+    @Query("SELECT c FROM Cart c WHERE c.orderId = 0 AND c.createdAt < :timeLimit")
     List<Cart> findInvalidCarts(LocalDateTime timeLimit);
 
     @Query("SELECT c FROM Cart c WHERE c.orderId IN :orderIds")
