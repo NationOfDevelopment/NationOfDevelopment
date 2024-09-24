@@ -55,7 +55,7 @@ public class ReviewService {
             throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_ORDERER);
         }
         // 완료된 주문만 리뷰 작성 가능
-        if (order.getStatus() != OrderStatus.ACCEPTED) {
+        if (order.getStatus() != OrderStatus.DELIVERED) {
             throw new ApiException(ErrorStatus._BAD_REQUEST_ORDER_STATUS);
         }
         // 이미 리뷰를 작성한 경우
