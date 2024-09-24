@@ -21,13 +21,13 @@ public class ReviewController {
     public ApiResponse<ReviewResponseDto> postReview(@Auth AuthUser authUser,
                                         @Valid @RequestBody ReviewRequestDto requestDto,
                                         @PathVariable Long orderId) {
-        return ApiResponse.onSuccess(reviewService.saveReview(requestDto, authUser));
+        return ApiResponse.onSuccess(reviewService.saveReview(requestDto, authUser, orderId));
     }
 
     @GetMapping("/stores/{storeId}/reviews")
     public ApiResponse<List<ReviewResponseDto>> getReviews(@PathVariable Long storeId,
                                               @RequestParam(defaultValue = "1") int min,
                                               @RequestParam(defaultValue = "5") int max) {
-        return ApiResponse.onSuccess(reviewService.getReviews(min, max));
+        return ApiResponse.onSuccess(reviewService.getReviews(min, max, storeId));
     }
 }

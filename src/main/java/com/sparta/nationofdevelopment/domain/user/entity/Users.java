@@ -65,6 +65,10 @@ public class Users {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    public void deleteUser() {
+        isDeleted = true;
+    }
     //AuthUser로부터 Users 엔티티를 만드는 메서드입니다. 비밀번호제외
     public static Users fromAuthUser(AuthUser authUser) {
         return new Users(authUser.getId(), authUser.getEmail(), authUser.getUsername(),authUser.getUserRole());

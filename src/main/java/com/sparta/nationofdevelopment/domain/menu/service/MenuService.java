@@ -7,6 +7,7 @@ import com.sparta.nationofdevelopment.domain.menu.dto.MenuRequestDto;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuResponseDto;
 import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
 import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
+import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
+    private final UtilFind utilFind;
 
     /**
      * 메뉴 등록
@@ -30,16 +32,9 @@ public class MenuService {
      */
     @Transactional
     public MenuResponseDto saveMenu(AuthUser authUser, Long storeId, MenuRequestDto requestDto) {
-        // 관리자 권한 체크
-        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
-            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
-        }
+        validate(authUser, storeId, ErrorStatus._AUTH_OWNER_MENU);
 
-        // 가게가 없을 때
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
-
-        Menu newMenu = new Menu(requestDto);
+        Menu newMenu = new Menu(requestDto, utilFind.storeFindById(storeId));
         Menu savedMenu = menuRepository.save(newMenu);
 
         return new MenuResponseDto(
@@ -60,19 +55,12 @@ public class MenuService {
      * @return
      */
     public MenuResponseDto updatemenu(AuthUser authUser, Long storeId, Long menuId, MenuRequestDto requestDto) {
-        // 관리자 권한 체크
-        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
-            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
-        }
+        validate(authUser, storeId, ErrorStatus._AUTH_OWNER_MENU);
 
-        // 가게가 없을 때
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
+        // 메뉴가 없을 때
+        Menu menu = utilFind.menuFindById(menuId);
 
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_MENU));
         menu.update(requestDto);
-
         Menu updatedMenu = menuRepository.save(menu);
 
         return new MenuResponseDto(
@@ -92,20 +80,32 @@ public class MenuService {
      */
     @Transactional
     public void deleteMenu(AuthUser authUser, Long menuId, Long storeId) {
-        // 관리자 권한 체크
-        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
-            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
-        }
+        validate(authUser, storeId, ErrorStatus._AUTH_OWNER_MENU_DELETED);
 
-        // 가게가 없을 때
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
-
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_MENU));
+        // 메뉴가 없을 때
+        Menu menu = utilFind.menuFindById(menuId);
 
         menu.delete();
         menuRepository.save(menu);
+    }
+
+
+
+
+
+    private void validate(AuthUser authUser, Long storeId, ErrorStatus authErrorStatus) {
+        // 관리자 권한 체크
+        if (!authUser.getUserRole().equals(UserRole.OWNER)) {
+            throw new ApiException(authErrorStatus);
+        }
+
+        // 가게가 없을 때
+        Store store = utilFind.storeFindById(storeId);
+
+        // 가게 사장님인지 확인
+        if (!store.getUser().getId().equals(authUser.getId())) {
+            throw new ApiException(ErrorStatus._UNAUTHORIZED_STORE_ACCESS);
+        }
     }
 
 

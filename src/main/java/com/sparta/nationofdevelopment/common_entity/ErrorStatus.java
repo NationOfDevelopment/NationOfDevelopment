@@ -20,8 +20,9 @@ public enum ErrorStatus implements BaseCode{
     _TEST_ERROR(HttpStatus.NO_CONTENT, 404, "ApiException 예외 처리 테스트"),
 
     //Auth,USer관련 코드
-    _NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND,404,"이메일을 찾을 수 없습니다."),
-    _DELETED_USER(HttpStatus.FORBIDDEN,403,"탈퇴한 계정입니다."),
+    _USERNAME_IS_SAME(HttpStatus.BAD_REQUEST,400,"변경하려는 이름이 전과 동일합니다"),
+    _NOT_FOUND_EMAIL(HttpStatus.BAD_REQUEST,400,"이메일을 찾을 수 없습니다."),
+    _DELETED_USER(HttpStatus.BAD_REQUEST,400,"탈퇴한 계정입니다."),
     _PASSWORD_NOT_MATCHES(HttpStatus.BAD_REQUEST,400,"비밀번호가 틀렸습니다."),
     _DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST,400,"중복된 이메일입니다."),
     _INVALID_EMAIL_FORM(HttpStatus.BAD_REQUEST,400,"이메일 형식이 올바르지 않습니다."),
@@ -29,11 +30,15 @@ public enum ErrorStatus implements BaseCode{
     _INVALID_USER_INFO(HttpStatus.BAD_REQUEST,400,"변경하려는 정보가 잘못되었습니다."),
     _INVALID_BIRTHDAY(HttpStatus.BAD_REQUEST,400,"잘못된 생일 값입니다"),
     _BAD_REQUEST_NOT_FOUND_USER(HttpStatus.BAD_REQUEST,400,"해당 유저를 찾을 수 없습니다."),
+    _PASSWORD_IS_DUPLICATED(HttpStatus.BAD_REQUEST,400,"이미 사용중인 비밀번호로 변경할 수 없습니다."),
+    _INVALID_USER_ROLE(HttpStatus.BAD_REQUEST,400,"잘못된 유저권한을 갖고있습니다."),
 
 
     // 메뉴 예외
-    _AUTH_ADMIN_MENU(HttpStatus.FORBIDDEN, 403, "메뉴 생성 및 수정은 사장님만 가능합니다."),
+    _AUTH_OWNER_MENU(HttpStatus.FORBIDDEN, 403, "메뉴 생성 및 수정은 사장님만 가능합니다."),
+    _AUTH_OWNER_MENU_DELETED(HttpStatus.FORBIDDEN, 403, "메뉴 삭제는 사장님만 가능합니다."),
     _NOT_FOUND_MENU(HttpStatus.NOT_FOUND, 404, "해당 메뉴를 찾을 수 없습니다."),
+    _UNAUTHORIZED_STORE_ACCESS(HttpStatus.FORBIDDEN, 403, "가게 사장님만 메뉴를 관리할 수 있습니다."),
 
     // 가게 예외
     _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다."),
@@ -45,7 +50,12 @@ public enum ErrorStatus implements BaseCode{
     _BAD_REQUEST_INVALID_STATUS_INVALID_ORDER(HttpStatus.BAD_REQUEST,400, "진행 상태의 주문만 완료하거나 취소할 수 있습니다."),
     _FORBIDDEN_NO_AUTHORITY_MANAGE_ORDER(HttpStatus.FORBIDDEN,403,"해당 가게 사장님만 해당 주문을 관리할 수 있습니다."),
     _BAD_REQUEST_MIN_ORDER_AMOUNT(HttpStatus.BAD_REQUEST,400,"요청하신 주문금액이 가게 최소 주문금액보다 적습니다."),
-    _BAD_REQUEST_CAN_NOT_CHANGE_TO_WAITING(HttpStatus.BAD_REQUEST,400,"진행중인 주문이거나 완료된 주문을 대기 상태로 변경할 수는 없습니다.");
+    _BAD_REQUEST_CAN_NOT_CHANGE_TO_WAITING(HttpStatus.BAD_REQUEST,400,"진행중인 주문이거나 완료된 주문을 대기 상태로 변경할 수는 없습니다."),
+    // 리뷰 예외
+    _BAD_REQUEST_NOT_ORDERER(HttpStatus.BAD_REQUEST, 400, "주문자가 아닙니다."),
+    _BAD_REQUEST_DUP_REVIEW(HttpStatus.BAD_REQUEST, 400, "이미 리뷰를 작성했습니다."),
+    _BAD_REQUEST_ORDER_STATUS(HttpStatus.BAD_REQUEST, 400, "완료된 주문에 대해서만 리뷰 작성이 가능합니다.");
+
 
 
     private final HttpStatus httpStatus;
