@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,12 +17,13 @@ import java.util.List;
 @Slf4j
 public class Scheduler {
     private final CartRepository cartRepository;
+    private final Clock clock;
 
     //1시간마다 "주문이 확정되지 않고 24시간이 지난 장바구니" 삭제
     @Transactional
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void runCartCleaner() {
-        LocalDateTime timeLimit = LocalDateTime.now().minusHours(24);
+        LocalDateTime timeLimit = LocalDateTime.now(clock).minusHours(24);
         log.info("만료된 장바구니를 삭제합니다..");
         List<Cart> cartsToDelete = cartRepository.findInvalidCarts(timeLimit);
         log.info("찾은 장바구니 수 : {}", cartsToDelete.size());

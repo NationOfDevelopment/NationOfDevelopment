@@ -10,6 +10,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.Clock;
 import java.util.List;
 
 import java.util.List;
@@ -29,4 +30,9 @@ public class WebConfig implements WebMvcConfigurer {
         return new Aspect();
     }
 
+    //Clock 등록
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
+    }
 }

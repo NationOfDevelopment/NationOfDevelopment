@@ -82,7 +82,7 @@ public class OrderService {
             throw new ApiException(ErrorStatus._BAD_REQUEST_INVALID_STATUS_INVALID_ORDER);
         }
 
-        foundOrder.setStatus(OrderStatus.valueOf(requestDto.getStatus()));
+        foundOrder.setStatus(requestDto.getStatus());
 
         Orders savedOrder = orderRepository.save(foundOrder);
 
@@ -107,9 +107,6 @@ public class OrderService {
     //가게 별 주문 전체 조회
     public List<OrderResponseDto> findByStoreId(long storeId) {
         List<Orders> ordersList = orderRepository.findByStore_StoreId(storeId);
-        if(ordersList.isEmpty()) {
-            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER);
-        }
         return convertToOrderResponseDtos(ordersList);
     }
 
@@ -117,9 +114,6 @@ public class OrderService {
     public List<OrderResponseDto> findByUser(AuthUser authUser) {
         long userId = authUser.getId();
         List<Orders> ordersList = orderRepository.findByUserId(userId);
-        if(ordersList.isEmpty()) {
-            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER);
-        }
         return convertToOrderResponseDtos(ordersList);
     }
 
