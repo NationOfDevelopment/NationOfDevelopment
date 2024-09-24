@@ -3,10 +3,8 @@ package com.sparta.nationofdevelopment.domain.order.service;
 import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
-import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import com.sparta.nationofdevelopment.domain.common.module.Finder;
 import com.sparta.nationofdevelopment.domain.order.OrderStatus;
-import com.sparta.nationofdevelopment.domain.order.dto.requestDto.OrderRequestDto;
 import com.sparta.nationofdevelopment.domain.order.dto.requestDto.OrderStatusRequestDto;
 import com.sparta.nationofdevelopment.domain.order.dto.responseDto.CartDto;
 import com.sparta.nationofdevelopment.domain.order.dto.responseDto.OrderResponseDto;
@@ -16,13 +14,11 @@ import com.sparta.nationofdevelopment.domain.order.entity.Orders;
 import com.sparta.nationofdevelopment.domain.order.repository.CartRepository;
 import com.sparta.nationofdevelopment.domain.order.repository.OrderRepository;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
-import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +28,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final StoreRepository storeRepository;
     private final CartRepository cartRepository;
     private final CartService cartService;
     private final Finder finder;
@@ -42,11 +37,11 @@ public class OrderService {
      * 1. 주문 : 주문Id, 유저Id, 가게Id, 총 가격, 주문 시간 , status 주문 요청으로 변경
      */
     @Transactional
-    public OrderResponseDto create(AuthUser authUser, long storeId, OrderRequestDto requestDto) {
+    public OrderResponseDto create(AuthUser authUser, long storeId) {
         Users currentUser = Users.fromAuthUser(authUser);
-        Store foundStore = finder.findByStoreId(storeId);
+        Store foundStore = finder.findStoreByStoreId(storeId);
 
-        List<Cart> cartList = cartService.convertToCartList(requestDto, authUser);
+        List<Cart> cartList = cartRepository.findByUser_Id(currentUser.getId());
 
         int totalAmount = calculateTotalAmount(cartList);
 
@@ -62,6 +57,7 @@ public class OrderService {
         return new OrderResponseDto(savedOrder, cartDtoList);
     }
 
+    //총 금액 계산 로직
     public int calculateTotalAmount(List<Cart> cartList) {
         int totalAmount = 0;
         for (Cart cart : cartList) {
@@ -70,6 +66,7 @@ public class OrderService {
         return totalAmount;
     }
 
+    //가게에서 설정한 최소 금액을 넘는지 검증
     public void validateMinOrderAmount(Store foundStore, int totalAmount) {
         if(foundStore.getMinOrderMount() > totalAmount) {
             throw new ApiException(ErrorStatus._BAD_REQUEST_MIN_ORDER_AMOUNT);
@@ -82,7 +79,7 @@ public class OrderService {
      */
     @Transactional
     public OrderStatusResponseDto changeStatus(AuthUser authUser, long orderId, OrderStatusRequestDto requestDto) {
-        Orders foundOrder = finder.findByOrderId(orderId);
+        Orders foundOrder = finder.findOrderByOrderId(orderId);
 
         validateChangingOrderStatus(authUser,requestDto,foundOrder);
 
@@ -144,7 +141,7 @@ public class OrderService {
 
     //주문 단건 조회
     public OrderResponseDto findByOrderId(long orderId) {
-        Orders foundOrder = finder.findByOrderId(orderId);
+        Orders foundOrder = finder.findOrderByOrderId(orderId);
         List<Cart> foundCarts = cartRepository.findByOrderId(orderId);
         List<CartDto> cartDtoList = foundCarts.stream().map(CartDto::new).toList();
         return new OrderResponseDto(foundOrder, cartDtoList);

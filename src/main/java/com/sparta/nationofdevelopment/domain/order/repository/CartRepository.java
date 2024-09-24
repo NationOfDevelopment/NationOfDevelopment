@@ -19,4 +19,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     @Query("SELECT c FROM Cart c WHERE c.orderId IN :orderIds")
     List<Cart> findCartsByOrderIds(@Param("orderIds") List<Long>orderIds);
+
+    List<Cart> findByUser_Id(long userId);
+
+    Optional<Cart> findByUser_idAndMenu_id(Long id, Long id1);
 }
+
