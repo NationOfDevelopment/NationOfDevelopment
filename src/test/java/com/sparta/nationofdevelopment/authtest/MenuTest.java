@@ -1,6 +1,7 @@
 package com.sparta.nationofdevelopment.authtest;
 
 import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
+import com.sparta.nationofdevelopment.domain.common.annotation.Auth;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
 import com.sparta.nationofdevelopment.domain.menu.dto.MenuRequestDto;
@@ -12,15 +13,18 @@ import com.sparta.nationofdevelopment.domain.menu.service.MenuService;
 import com.sparta.nationofdevelopment.domain.menu.util.UtilFind;
 import com.sparta.nationofdevelopment.domain.store.dto.request.StoreRequestDto;
 import com.sparta.nationofdevelopment.domain.store.entity.Store;
+import com.sparta.nationofdevelopment.domain.store.entity.StoreStatus;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
+import jdk.jshell.execution.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,13 +65,18 @@ public class MenuTest {
 
     @Test
     void 메뉴_등록_시_로그인_한_유저가_사장님일_때() {
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
         Long storeId = 1L;
+        Long userId = 1L;
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
-        Menu saveMenu = new Menu(requestDto);
 
-        given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
-        given(menuRepository.save(any(Menu.class))).willReturn(saveMenu);
+        Users owner = new Users(userId, "test@naver.com", "hi", UserRole.OWNER);
+        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+
+        Menu newMenu = new Menu(requestDto, store);
+
+        given(utilFind.storeFindById(storeId)).willReturn(store);
+        given(menuRepository.save(any(Menu.class))).willReturn(newMenu);
 
         assertDoesNotThrow(() -> {
             menuService.saveMenu(authUser, storeId, requestDto);
@@ -76,11 +85,11 @@ public class MenuTest {
 
     @Test
     void 메뉴_등록_시_가게가_없을_때() {
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
         Long storeId = 999L;
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
 
-        given(storeRepository.findById(storeId)).willReturn(Optional.empty());
+        given(utilFind.storeFindById(storeId)).willThrow(new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
         ApiException e = assertThrows(ApiException.class, () -> {
             menuService.saveMenu(authUser, storeId, requestDto);
@@ -91,15 +100,17 @@ public class MenuTest {
 
     @Test
     void 메뉴_등록_성공() {
-        long storeId = 1L;
 
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
         Users user = Users.fromAuthUser(authUser);
 
-        MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
-        Menu saveMenu = new Menu(requestDto);
+        long storeId = 1L;
+        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, Users.fromAuthUser(authUser));
 
-        given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
+        MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
+        Menu saveMenu = new Menu(requestDto, store);
+
+        given(utilFind.storeFindById(storeId)).willReturn(store);
         given(menuRepository.save(any(Menu.class))).willReturn(saveMenu);
 
         MenuResponseDto responseDto = menuService.saveMenu(authUser, storeId, requestDto);
@@ -115,14 +126,18 @@ public class MenuTest {
      */
     @Test
     void 메뉴_수정_시_해당_메뉴를_찾을_수_없을_때() {
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
         long menuId = 1L;
         long storeId = 1L;
 
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
+
         MenuRequestDto requestDto = new MenuRequestDto("메뉴 이름", 14000, "한식");
 
-        given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
-        given(menuRepository.findById(menuId)).willReturn(Optional.empty());
+        Users owner = new Users(1L, "test@naver.com", "hi", UserRole.OWNER);
+        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+
+        given(utilFind.storeFindById(storeId)).willReturn(store);
+        given(utilFind.menuFindById(menuId)).willThrow(new ApiException(ErrorStatus._NOT_FOUND_MENU));
 
         ApiException e = assertThrows(ApiException.class, () ->
                 menuService.updatemenu(authUser, storeId, menuId, requestDto)
@@ -135,21 +150,23 @@ public class MenuTest {
     void 메뉴_수정_성공() {
         long storeId = 1L;
         long menuId = 1L;
+        long userId = 1L;
 
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
 
         // 가게 생성
-        Store store = new Store();
+        Users owner = new Users(userId, "test@naver.com", "hi", UserRole.OWNER);
+        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
 
         // 기존 메뉴
-        Menu prevMenu = new Menu("기존 메뉴 이름", 15000, "중식", menuId);
+        MenuRequestDto requestDto = new MenuRequestDto("수정 된 메뉴 이름", 16000, "양식");
+        Menu prevMenu = new Menu(requestDto, store);
 
         // 메뉴 수정
-        MenuRequestDto requestDto = new MenuRequestDto("수정 된 메뉴 이름", 16000, "양식");
-        Menu updateMenu = new Menu(requestDto.getMenuName(), requestDto.getAmount(), requestDto.getCategory(), menuId);
+        Menu updateMenu = new Menu(requestDto, store);
 
-        given(storeRepository.findById(storeId)).willReturn(Optional.of(store));
-        given(menuRepository.findById(menuId)).willReturn(Optional.of(prevMenu));
+        given(utilFind.storeFindById(storeId)).willReturn(store);
+        given(utilFind.menuFindById(menuId)).willReturn(prevMenu);
         given(menuRepository.save(prevMenu)).willReturn(updateMenu);
 
         MenuResponseDto responseDto = menuService.updatemenu(authUser, storeId, menuId, requestDto);
@@ -166,14 +183,20 @@ public class MenuTest {
     @Test
     void 메뉴_삭제_성공() {
         // Given
-        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.ADMIN);
-        Long menuId = 1L;
-        Long storeId = 1L;
-        Menu menu = new Menu("메뉴 이름", 14000, "한식", storeId);
+        long menuId = 1L;
+        long storeId = 1L;
+        long userId = 1L;
+        AuthUser authUser = new AuthUser(1L, "test@naver.com", "123", UserRole.OWNER);
+
+        Users owner = new Users(userId, "test@naver.com", "hi", UserRole.OWNER);
+        Store store = new Store(1L, "gkdl", 2, LocalTime.of(9, 0), LocalTime.of(21, 0), StoreStatus.OPEN, owner);
+
+        MenuRequestDto requestDto = new MenuRequestDto("수정 된 메뉴 이름", 16000, "양식");
+        Menu menu = new Menu(requestDto, store);
         menu.delete(); // 초기 상태를 DELETED로 설정
 
-        given(menuRepository.findById(menuId)).willReturn(Optional.of(menu));
-        given(storeRepository.findById(storeId)).willReturn(Optional.of(new Store()));
+        given(utilFind.menuFindById(menuId)).willReturn(menu);
+        given(utilFind.storeFindById(storeId)).willReturn(store);
 
         // When
         menuService.deleteMenu(authUser, menuId, storeId);
