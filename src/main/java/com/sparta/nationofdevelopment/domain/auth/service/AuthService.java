@@ -29,29 +29,21 @@ public class AuthService {
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
-        String email = requestDto.getEmail();
-        String username = requestDto.getUsername();
-        UserRole userRole = UserRole.of(requestDto.getUserRole());
-        Date birthday = requestDto.getBirthday();
 
         // 이메일 형식 확인
-        if(!requestDto.isEmailValid()) {
-            throw new ApiException(ErrorStatus._INVALID_EMAIL_FORM);
-        }
-        // 비밀번호 형식 확인
-        if (!requestDto.isPasswordValid()) {
-            throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
-        }
+        IsValid(requestDto);
 
-        if (!requestDto.isBirthdayValid()) {
-            throw new ApiException(ErrorStatus._INVALID_BIRTHDAY);
-        }
-
+        String email = requestDto.getEmail();
         Optional<Users> checkEmail = userRepository.findByEmail(email);
 
         if (checkEmail.isPresent()) {
             throw new ApiException(ErrorStatus._DUPLICATED_EMAIL);
         }
+
+        String username = requestDto.getUsername();
+        UserRole userRole = UserRole.of(requestDto.getUserRole());
+        Date birthday = requestDto.getBirthday();
+
         String password = passwordEncoder.encode(requestDto.getPassword());
 
         // email 중복확인, email: unique=true
@@ -71,7 +63,19 @@ public class AuthService {
 
         return new SignupResponseDto(bearerToken);
     }
+    public void IsValid(SignupRequestDto requestDto) {
+        if(!requestDto.isEmailValid()) {
+            throw new ApiException(ErrorStatus._INVALID_EMAIL_FORM);
+        }
+        // 비밀번호 형식 확인
+        if (!requestDto.isPasswordValid()) {
+            throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
+        }
 
+        if (!requestDto.isBirthdayValid()) {
+            throw new ApiException(ErrorStatus._INVALID_BIRTHDAY);
+        }
+    }
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Users user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_EMAIL));

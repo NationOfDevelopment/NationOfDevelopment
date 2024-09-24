@@ -6,7 +6,6 @@ import com.sparta.nationofdevelopment.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
 
 import java.util.Date;
 
@@ -73,6 +72,8 @@ public class Users {
     public static Users fromAuthUser(AuthUser authUser) {
         return new Users(authUser.getId(), authUser.getEmail(), authUser.getUsername(),authUser.getUserRole());
     }
-
+    public Users(UserRole userRole) {
+        this.userRole = userRole;
+    }
 
 }

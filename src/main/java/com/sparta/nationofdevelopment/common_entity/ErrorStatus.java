@@ -41,8 +41,15 @@ public enum ErrorStatus implements BaseCode{
     _UNAUTHORIZED_STORE_ACCESS(HttpStatus.FORBIDDEN, 403, "가게 사장님만 메뉴를 관리할 수 있습니다."),
 
     // 가게 예외
+    _NOT_FOUND_USER(HttpStatus.NOT_FOUND, 404, "사용자를 찾을 수 없습니다."),
+    _FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, 403, "사장님 권한이 없습니다."),
+    _CONFLICT_STORE_NAME(HttpStatus.CONFLICT, 409, "이미 존재하는 가게 이름입니다."),
+    _BAD_REQUEST_INVALID_DATA(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 데이터입니다."),
     _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다."),
     _BAD_REQUEST_STORE_CLOSED(HttpStatus.BAD_REQUEST,400,"현재 영업시간이 아닙니다."),
+    _CLOSED_STORE(HttpStatus.NOT_FOUND, 404, "해당 가게는 폐업 상태입니다."),
+    _BAD_REQUEST_INVALID_EMAIL(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 이메일입니다."),
+
 
 
     //주문/장바구니 관련 예외
