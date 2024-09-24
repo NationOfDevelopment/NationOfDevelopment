@@ -1,7 +1,7 @@
 package com.sparta.nationofdevelopment.domain.common.module;
 
-import com.sparta.nationofdevelopment.domain.order.dto.OrderResponseDto;
-import com.sparta.nationofdevelopment.domain.order.dto.OrderStatusResponseDto;
+import com.sparta.nationofdevelopment.domain.order.dto.responseDto.OrderResponseDto;
+import com.sparta.nationofdevelopment.domain.order.dto.responseDto.OrderStatusResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Before;

@@ -1,5 +1,6 @@
-package com.sparta.nationofdevelopment.domain.order.dto;
+package com.sparta.nationofdevelopment.domain.order.dto.requestDto;
 
+import com.sparta.nationofdevelopment.domain.order.OrderStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderStatusRequestDto {
     @NotNull
-    private String status;
+    private OrderStatus status;
 }

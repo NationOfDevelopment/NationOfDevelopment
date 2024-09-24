@@ -1,4 +1,4 @@
-package com.sparta.nationofdevelopment.domain.order.dto;
+package com.sparta.nationofdevelopment.domain.order.dto.requestDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

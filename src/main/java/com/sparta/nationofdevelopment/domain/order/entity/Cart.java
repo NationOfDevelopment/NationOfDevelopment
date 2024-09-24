@@ -3,12 +3,11 @@ package com.sparta.nationofdevelopment.domain.order.entity;
 import com.sparta.nationofdevelopment.common_entity.Timestamped;
 import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
-import com.sparta.nationofdevelopment.domain.order.dto.MenuItemDto;
+import com.sparta.nationofdevelopment.domain.order.dto.requestDto.MenuItemDto;
 import com.sparta.nationofdevelopment.domain.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
