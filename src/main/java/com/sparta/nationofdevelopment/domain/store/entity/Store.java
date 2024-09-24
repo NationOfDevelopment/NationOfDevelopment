@@ -75,6 +75,8 @@ public class Store {
         this.user = user;
     }
 
+
+
     public void closeStore() {
         this.status = StoreStatus.CLOSED;
     }
