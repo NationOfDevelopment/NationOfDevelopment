@@ -31,8 +31,10 @@ public enum ErrorStatus implements BaseCode{
 
 
     // 메뉴 예외
-    _AUTH_ADMIN_MENU(HttpStatus.FORBIDDEN, 403, "메뉴 생성 및 수정은 사장님만 가능합니다."),
+    _AUTH_OWNER_MENU(HttpStatus.FORBIDDEN, 403, "메뉴 생성 및 수정은 사장님만 가능합니다."),
+    _AUTH_OWNER_MENU_DELETED(HttpStatus.FORBIDDEN, 403, "메뉴 삭제는 사장님만 가능합니다."),
     _NOT_FOUND_MENU(HttpStatus.NOT_FOUND, 404, "해당 메뉴를 찾을 수 없습니다."),
+    _UNAUTHORIZED_STORE_ACCESS(HttpStatus.FORBIDDEN, 403, "가게 사장님만 메뉴를 관리할 수 있습니다."),
 
     // 가게 예외
     _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다.");
