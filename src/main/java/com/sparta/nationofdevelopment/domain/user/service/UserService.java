@@ -66,10 +66,14 @@ public class UserService {
     @Transactional
     public void updateUserName(AuthUser authUser, UserInfoUpdateRequestDto requestDto) {
         Users user = getUsers(authUser);
-
-        if(requestDto.getNewUserName()==null||requestDto.getNewUserName().isEmpty()) {
+        if(requestDto.getNewUserName()==null||requestDto.getNewUserName().trim().isEmpty()) {
             throw new ApiException(ErrorStatus._INVALID_USER_INFO);
         }
+
+        if(requestDto.getNewUserName().equals(user.getUsername())) {
+            throw new ApiException(ErrorStatus._USERNAME_IS_SAME);
+        }
+
         user.updateUserInfo(requestDto.getNewUserName());
 
     }
@@ -83,21 +87,27 @@ public class UserService {
         user.updateUserInfo(requestDto.getBirthday());
     }
 
-
-
     public Users getUsers(AuthUser authUser) {
         Users user =userRepository.findByEmail(authUser.getEmail()).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_EMAIL));
         return user;
     }
+    @Transactional
+    public void updatePassword(AuthUser authUser, UserPasswordUpdateRequestDto requestDto) {
+        Users user = getUsers(authUser);
 
-//    public void updatePassword(AuthUser authUser, UserPasswordUpdateRequestDto requestDto) {
-//        Users user = getUsers(authUser);
-//
-//        if (!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
-//            throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
-//        }
-//        if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())) {}
-//    }
+        if (!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
+            throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
+        }
+        if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())) {
+            throw new ApiException(ErrorStatus._PASSWORD_IS_DUPLICATED);
+        }
+        //변경하려는 비밀번호가 유효성검사를 통과하지못한다면.
+        if (!passwordEncoder.isPasswordValid(requestDto.getNewPassword())) {
+            throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
+        }
+        String password = passwordEncoder.encode(requestDto.getNewPassword());
+        user.updatePassword(password);
+    }
 }
 

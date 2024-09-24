@@ -42,11 +42,11 @@ public class UserController {
         userService.updateBirthday(authUser,requestDto);
         return ApiResponse.onSuccess(null);
     }
-//    @PutMapping("/users/change-password")
-//    public ApiResponse<Null> updateUserPassword(
-//            @Auth AuthUser authUser,
-//            @RequestBody UserPasswordUpdateRequestDto requestDto) {
-//        userService.updatePassword(authUser,requestDto);
-//        return ApiResponse.onSuccess(null);
-//    }
+    @PutMapping("/users/change-password")
+    public ApiResponse<Null> updateUserPassword(
+            @Auth AuthUser authUser,
+            @RequestBody UserPasswordUpdateRequestDto requestDto) {
+        userService.updatePassword(authUser,requestDto);
+        return ApiResponse.onSuccess(null);
+    }
 }
