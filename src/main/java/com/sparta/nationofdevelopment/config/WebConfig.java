@@ -3,6 +3,7 @@ package com.sparta.nationofdevelopment.config;
 import com.sparta.nationofdevelopment.domain.common.module.Aspect;
 import com.sparta.nationofdevelopment.domain.common.module.Aspect;
 import com.sparta.nationofdevelopment.domain.common.module.Finder;
+import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
 import com.sparta.nationofdevelopment.domain.order.repository.CartRepository;
 import com.sparta.nationofdevelopment.domain.order.repository.OrderRepository;
 import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
@@ -43,7 +44,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     //Finder 등록
     @Bean
-    public Finder finder(OrderRepository orderRepository, StoreRepository storeRepository, CartRepository cartRepository, UserRepository userRepository) {
-        return new Finder(orderRepository,storeRepository,cartRepository,userRepository);
+    public Finder finder(OrderRepository orderRepository, StoreRepository storeRepository, CartRepository cartRepository, UserRepository userRepository, MenuRepository menuRepository) {
+        return new Finder(orderRepository,storeRepository,cartRepository,userRepository,menuRepository);
     }
 }

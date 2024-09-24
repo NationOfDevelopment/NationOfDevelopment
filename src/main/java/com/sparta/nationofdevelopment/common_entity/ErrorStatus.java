@@ -47,23 +47,28 @@ public enum ErrorStatus implements BaseCode{
     _CONFLICT_STORE_NAME(HttpStatus.CONFLICT, 409, "이미 존재하는 가게 이름입니다."),
     _BAD_REQUEST_INVALID_DATA(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 데이터입니다."),
     _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다."),
+    _BAD_REQUEST_STORE_CLOSED(HttpStatus.BAD_REQUEST,400,"현재 영업시간이 아닙니다."),
     _CLOSED_STORE(HttpStatus.NOT_FOUND, 404, "해당 가게는 폐업 상태입니다."),
     _BAD_REQUEST_INVALID_EMAIL(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 이메일입니다."),
 
 
-    //주문 관련 예외
-    _BAD_REQUEST_NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, 400, "해당 주문을 찾을 수 없습니다.."),
+
+    //주문/장바구니 관련 예외
+    _BAD_REQUEST_NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, 400, "해당 주문을 찾을 수 없습니다."),
     _BAD_REQUEST_INVALID_STATUS_ACCEPTED_OR_REJECTED(HttpStatus.BAD_REQUEST,400, "수락 대기 상태의 주문만 수락하거나 거절할 수 있습니다."),
     _BAD_REQUEST_INVALID_STATUS_INVALID_ORDER(HttpStatus.BAD_REQUEST,400, "진행 상태의 주문만 완료하거나 취소할 수 있습니다."),
     _FORBIDDEN_NO_AUTHORITY_MANAGE_ORDER(HttpStatus.FORBIDDEN,403,"해당 가게 사장님만 해당 주문을 관리할 수 있습니다."),
     _BAD_REQUEST_MIN_ORDER_AMOUNT(HttpStatus.BAD_REQUEST,400,"요청하신 주문금액이 가게 최소 주문금액보다 적습니다."),
     _BAD_REQUEST_CAN_NOT_CHANGE_TO_WAITING(HttpStatus.BAD_REQUEST,400,"진행중인 주문이거나 완료된 주문을 대기 상태로 변경할 수는 없습니다."),
+    _FORBIDDEN_DELETE_CART(HttpStatus.FORBIDDEN,403,"해당 장바구니를 삭제할 수 있는 권한이 없습니다."),
+    _BAD_REQUEST_DUPLICATE_CART_ITEM(HttpStatus.BAD_REQUEST,400,"같은 가게의 같은 메뉴를 장바구니에 넣을 수 업습니다."),
+    _BAD_REQUEST_UNABLE_TO_DELETE_CART(HttpStatus.BAD_REQUEST,400,"현재 진행중인 주문으로 바뀐 장바구니는 삭제할 수 없습니다."),
+    _BAD_REQUEST_NOT_FOUND_CART(HttpStatus.BAD_REQUEST,400,"해당 장바구니를 찾을 수 없습니다."),
+
     // 리뷰 예외
     _BAD_REQUEST_NOT_ORDERER(HttpStatus.BAD_REQUEST, 400, "주문자가 아닙니다."),
     _BAD_REQUEST_DUP_REVIEW(HttpStatus.BAD_REQUEST, 400, "이미 리뷰를 작성했습니다."),
     _BAD_REQUEST_ORDER_STATUS(HttpStatus.BAD_REQUEST, 400, "완료된 주문에 대해서만 리뷰 작성이 가능합니다.");
-
-
 
 
     private final HttpStatus httpStatus;

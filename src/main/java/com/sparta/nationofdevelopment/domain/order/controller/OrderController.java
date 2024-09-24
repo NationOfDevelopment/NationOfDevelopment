@@ -20,10 +20,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/stores/{storeId}/orders")
-    public ApiResponse<OrderResponseDto> create(@Auth AuthUser authUser,
-                                                @PathVariable long storeId,
-                                                @Valid @RequestBody OrderRequestDto requestDto) {
-        return ApiResponse.onSuccess(orderService.create(authUser, storeId, requestDto));
+    public ApiResponse<OrderResponseDto> create(@Auth AuthUser authUser, @PathVariable long storeId) {
+        return ApiResponse.onSuccess(orderService.create(authUser, storeId));
     }
 
     @PutMapping("/owner/orders/{orderId}")
