@@ -15,4 +15,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     List<Store> findByStoreName(String storeName);
     List<Store> findByStatus(StoreStatus status);
     List<Store> findAllByUserAndStatus(Users users, StoreStatus status);
+    List<Store> findByStoreNameContaining(String storeName);
 }
