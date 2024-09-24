@@ -37,6 +37,7 @@ public enum ErrorStatus implements BaseCode{
 
     // 가게 예외
     _NOT_FOUND_STORE(HttpStatus.NOT_FOUND, 404, "가게를 찾을 수 없습니다."),
+    _BAD_REQUEST_STORE_CLOSED(HttpStatus.BAD_REQUEST,400,"현재 영업시간이 아닙니다."),
 
 
     //주문 관련 예외

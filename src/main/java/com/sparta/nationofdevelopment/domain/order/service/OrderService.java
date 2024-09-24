@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartService cartService;
     private final Finder finder;
+    private final Clock clock;
 
     /**
      * 주문 생성
@@ -40,16 +43,15 @@ public class OrderService {
     public OrderResponseDto create(AuthUser authUser, long storeId) {
         Users currentUser = Users.fromAuthUser(authUser);
         Store foundStore = finder.findStoreByStoreId(storeId);
+        validateIsStoreOpen(foundStore);
 
         List<Cart> cartList = cartRepository.findByUser_Id(currentUser.getId());
 
         int totalAmount = calculateTotalAmount(cartList);
-
         validateMinOrderAmount(foundStore,totalAmount);
 
         Orders savedOrder = orderRepository.save(
                 new Orders(totalAmount, currentUser, foundStore, OrderStatus.WAITING));
-
         cartService.saveOrderIdsToCarts(cartList,savedOrder);
 
         List<CartDto> cartDtoList = cartList.stream().map(CartDto::new).toList();
@@ -70,6 +72,14 @@ public class OrderService {
     public void validateMinOrderAmount(Store foundStore, int totalAmount) {
         if(foundStore.getMinOrderMount() > totalAmount) {
             throw new ApiException(ErrorStatus._BAD_REQUEST_MIN_ORDER_AMOUNT);
+        }
+    }
+
+    //주문 넣는 시간이 가게 영업시간인지 검증
+    private void validateIsStoreOpen(Store store) {
+        LocalTime now = LocalTime.now(clock);
+        if(now.isBefore(store.getOpenTime()) || now.isAfter(store.getCloseTime())) {
+            throw new ApiException(ErrorStatus._BAD_REQUEST_STORE_CLOSED);
         }
     }
 
