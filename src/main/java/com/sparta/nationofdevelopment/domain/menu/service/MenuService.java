@@ -32,14 +32,19 @@ public class MenuService {
     public MenuResponseDto saveMenu(AuthUser authUser, Long storeId, MenuRequestDto requestDto) {
         // 관리자 권한 체크
         if (!authUser.getUserRole().equals(UserRole.OWNER)) {
-            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
+            throw new ApiException(ErrorStatus._AUTH_OWNER_MENU);
         }
 
         // 가게가 없을 때
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
-        Menu newMenu = new Menu(requestDto);
+        // 가게 사장님인지 확인
+        if (!store.getUser().getId().equals(authUser.getId())) {
+            throw new ApiException(ErrorStatus._UNAUTHORIZED_STORE_ACCESS);
+        }
+
+        Menu newMenu = new Menu(requestDto, store);
         Menu savedMenu = menuRepository.save(newMenu);
 
         return new MenuResponseDto(
@@ -62,17 +67,23 @@ public class MenuService {
     public MenuResponseDto updatemenu(AuthUser authUser, Long storeId, Long menuId, MenuRequestDto requestDto) {
         // 관리자 권한 체크
         if (!authUser.getUserRole().equals(UserRole.OWNER)) {
-            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
+            throw new ApiException(ErrorStatus._AUTH_OWNER_MENU);
         }
 
         // 가게가 없을 때
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
+        // 메뉴가 없을 때
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_MENU));
-        menu.update(requestDto);
 
+        // 가게 사장님인지 확인
+        if (!store.getUser().getId().equals(authUser.getId())) {
+            throw new ApiException(ErrorStatus._UNAUTHORIZED_STORE_ACCESS);
+        }
+
+        menu.update(requestDto);
         Menu updatedMenu = menuRepository.save(menu);
 
         return new MenuResponseDto(
@@ -94,15 +105,21 @@ public class MenuService {
     public void deleteMenu(AuthUser authUser, Long menuId, Long storeId) {
         // 관리자 권한 체크
         if (!authUser.getUserRole().equals(UserRole.OWNER)) {
-            throw new ApiException(ErrorStatus._AUTH_ADMIN_MENU);
+            throw new ApiException(ErrorStatus._AUTH_OWNER_MENU_DELETED);
         }
 
         // 가게가 없을 때
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_STORE));
 
+        // 메뉴가 없을 때
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_MENU));
+
+        // 가게 사장님인지 확인
+        if (!store.getUser().getId().equals(authUser.getId())) {
+            throw new ApiException(ErrorStatus._UNAUTHORIZED_STORE_ACCESS);
+        }
 
         menu.delete();
         menuRepository.save(menu);
