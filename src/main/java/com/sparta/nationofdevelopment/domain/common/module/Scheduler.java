@@ -26,6 +26,6 @@ public class Scheduler {
         List<Cart> cartsToDelete = cartRepository.findInvalidCarts(timeLimit);
         log.info("찾은 장바구니 수 : {}", cartsToDelete.size());
         cartRepository.deleteAll(cartsToDelete);
-        log.info("삭제 완료");
+        log.info("장바구니 클리너 작업 완료");
     }
 }

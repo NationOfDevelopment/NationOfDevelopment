@@ -21,6 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
@@ -88,14 +89,8 @@ public class OrderService {
         return new OrderStatusResponseDto(savedOrder);
     }
 
-    //가게 별 주문 전체 조회
-    @Transactional
-    public List<OrderResponseDto> findByStoreId(long storeId) {
-        List<Orders> ordersList = orderRepository.findByStore_StoreId(storeId);
-        if(ordersList.isEmpty()) {
-            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER);
-        }
-
+    //OrderList에 CartDto를 담아서 OrderResponseDto로 반환
+    public List<OrderResponseDto> convertToOrderResponseDtos(List<Orders> ordersList) {
         return ordersList.stream()
                 .map(order -> {
                     List<Cart> cartList = cartRepository.findByOrderId(order.getId());
@@ -107,5 +102,33 @@ public class OrderService {
                     return new OrderResponseDto(order, cartDtos);
                 })
                 .toList();
+    }
+
+    //가게 별 주문 전체 조회
+    public List<OrderResponseDto> findByStoreId(long storeId) {
+        List<Orders> ordersList = orderRepository.findByStore_StoreId(storeId);
+        if(ordersList.isEmpty()) {
+            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER);
+        }
+        return convertToOrderResponseDtos(ordersList);
+    }
+
+    //유저 별 주문 조회
+    public List<OrderResponseDto> findByUser(AuthUser authUser) {
+        long userId = authUser.getId();
+        List<Orders> ordersList = orderRepository.findByUserId(userId);
+        if(ordersList.isEmpty()) {
+            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER);
+        }
+        return convertToOrderResponseDtos(ordersList);
+    }
+
+    //주문 단건 조회
+    public OrderResponseDto findByOrderId(long orderId) {
+        Orders foundOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_ORDER));
+        List<Cart> foundCarts = cartRepository.findByOrderId(orderId);
+        List<CartDto> cartDtoList = foundCarts.stream().map(CartDto::new).toList();
+        return new OrderResponseDto(foundOrder,cartDtoList);
     }
 }

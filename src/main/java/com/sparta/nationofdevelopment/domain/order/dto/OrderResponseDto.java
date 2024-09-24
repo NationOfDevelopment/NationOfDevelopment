@@ -15,6 +15,7 @@ public class OrderResponseDto {
     private final int totalAmount;
     private final OrderStatus status;
     private final LocalDateTime orderDate;
+    private final LocalDateTime lastUpdateDate;
     private final List<CartDto> cartList;
 
     public OrderResponseDto(Orders order , List<CartDto> cartDtoList) {
@@ -24,6 +25,7 @@ public class OrderResponseDto {
         this.totalAmount = order.getTotalAmount();
         this.status = order.getStatus();
         this.orderDate = order.getCreatedAt();
+        this.lastUpdateDate = order.getUpdatedAt();
         this.cartList = cartDtoList;
     }
 
