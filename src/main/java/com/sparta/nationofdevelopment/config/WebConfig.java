@@ -2,6 +2,11 @@ package com.sparta.nationofdevelopment.config;
 
 import com.sparta.nationofdevelopment.domain.common.module.Aspect;
 import com.sparta.nationofdevelopment.domain.common.module.Aspect;
+import com.sparta.nationofdevelopment.domain.common.module.Finder;
+import com.sparta.nationofdevelopment.domain.order.repository.CartRepository;
+import com.sparta.nationofdevelopment.domain.order.repository.OrderRepository;
+import com.sparta.nationofdevelopment.domain.store.repository.StoreRepository;
+import com.sparta.nationofdevelopment.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Bean;
@@ -34,5 +39,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public Clock clock() {
         return Clock.systemDefaultZone();
+    }
+
+    //Finder 등록
+    @Bean
+    public Finder finder(OrderRepository orderRepository, StoreRepository storeRepository, CartRepository cartRepository, UserRepository userRepository) {
+        return new Finder(orderRepository,storeRepository,cartRepository,userRepository);
     }
 }

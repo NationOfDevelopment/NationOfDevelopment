@@ -1,4 +1,4 @@
-package com.sparta.nationofdevelopment.domain.order.dto;
+package com.sparta.nationofdevelopment.domain.order.dto.responseDto;
 
 import com.sparta.nationofdevelopment.domain.order.OrderStatus;
 import com.sparta.nationofdevelopment.domain.order.entity.Orders;

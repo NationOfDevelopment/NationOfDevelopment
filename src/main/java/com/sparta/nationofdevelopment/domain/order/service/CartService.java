@@ -4,9 +4,10 @@ import com.sparta.nationofdevelopment.domain.common.dto.AuthUser;
 import com.sparta.nationofdevelopment.domain.common.exception.InvalidRequestException;
 import com.sparta.nationofdevelopment.domain.menu.entity.Menu;
 import com.sparta.nationofdevelopment.domain.menu.repository.MenuRepository;
-import com.sparta.nationofdevelopment.domain.order.dto.MenuItemDto;
-import com.sparta.nationofdevelopment.domain.order.dto.OrderRequestDto;
+import com.sparta.nationofdevelopment.domain.order.dto.requestDto.MenuItemDto;
+import com.sparta.nationofdevelopment.domain.order.dto.requestDto.OrderRequestDto;
 import com.sparta.nationofdevelopment.domain.order.entity.Cart;
+import com.sparta.nationofdevelopment.domain.order.entity.Orders;
 import com.sparta.nationofdevelopment.domain.order.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,13 @@ public class CartService {
         }
 
         return cartList;
+    }
+
+    @Transactional
+    public void saveOrderIdsToCarts(List<Cart> cartList, Orders savedOrder) {
+        for (Cart cart : cartList) {
+            cart.setOrderId(savedOrder.getId());
+        }
+        cartRepository.saveAll(cartList);
     }
 }
