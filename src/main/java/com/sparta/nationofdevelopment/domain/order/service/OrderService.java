@@ -76,7 +76,7 @@ public class OrderService {
     }
 
     //주문 넣는 시간이 가게 영업시간인지 검증
-    private void validateIsStoreOpen(Store store) {
+    public void validateIsStoreOpen(Store store) {
         LocalTime now = LocalTime.now(clock);
         if(now.isBefore(store.getOpenTime()) || now.isAfter(store.getCloseTime())) {
             throw new ApiException(ErrorStatus._BAD_REQUEST_STORE_CLOSED);
