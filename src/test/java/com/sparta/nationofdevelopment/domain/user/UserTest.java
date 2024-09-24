@@ -280,5 +280,22 @@ public class UserTest {
         userService.deleteUser(authUser, requestDto);
 
     }
+    @Test
+    public void getUsersCheckDeleted_메서드_정상작동() {
+        Long userId = 1L;
+        AuthUser authUser = new AuthUser(
+                userId,
+                "asd@gmail.com",
+                "testname",
+                UserRole.USER
+        );
+        Users user = Users.fromAuthUser(authUser);
+        user.deleteUser();
 
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
+
+        ApiException exception = assertThrows(ApiException.class, () -> userService.getUsersCheckDeleted(authUser));
+
+        assertEquals(exception.getErrorCode().getReasonHttpStatus().getMessage(),"탈퇴한 계정입니다.");
+    }
 }

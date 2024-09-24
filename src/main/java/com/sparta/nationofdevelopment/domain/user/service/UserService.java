@@ -37,7 +37,7 @@ public class UserService {
     @Transactional
     public UserGetResponseDto getUserInfo(AuthUser authUser) {
         userRoleCheck(authUser);
-        Users user = getUsers(authUser);
+        Users user = getUsersCheckDeleted(authUser);
         UserGetResponseDto userGetResponseDto=new UserGetResponseDto(
                     user.getEmail(),
                     user.getUsername(),
@@ -56,7 +56,7 @@ public class UserService {
     }
     @Transactional
     public void updateUserInfo(AuthUser authUser,UserInfoUpdateRequestDto requestDto) {
-        Users user = getUsers(authUser);
+        Users user = getUsersCheckDeleted(authUser);
         //이름이 문제없으면 nameCheck는 true
         boolean nameCheck = userNameCheck(requestDto);
         boolean birthdayCheck = userBirthdayCheck(requestDto);
@@ -91,7 +91,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(AuthUser authUser, UserPasswordUpdateRequestDto requestDto) {
-        Users user = getUsers(authUser);
+        Users user = getUsersCheckDeleted(authUser);
 
         if (!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
             throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
@@ -109,7 +109,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(AuthUser authUser, UserDeleteRequestDto requestDto) {
-        Users user = getUsers(authUser);
+        Users user = getUsersCheckDeleted(authUser);
 
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
@@ -127,6 +127,14 @@ public class UserService {
     public Users getUsers(AuthUser authUser) {
         return userRepository.findByEmail(authUser.getEmail()).orElseThrow(()->
                 new ApiException(ErrorStatus._NOT_FOUND_EMAIL));
+    }
+    public Users getUsersCheckDeleted(AuthUser authUser) {
+        Users user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(()->
+                new ApiException(ErrorStatus._NOT_FOUND_EMAIL));
+        if(user.getIsDeleted()) {
+            throw new ApiException(ErrorStatus._DELETED_USER);
+        }
+        return user;
     }
     public void userRoleCheck(AuthUser authUser) {
         if(!(authUser.getUserRole().equals(UserRole.USER)||authUser.getUserRole().equals(UserRole.OWNER)||authUser.getUserRole().equals(UserRole.ADMIN))) {
