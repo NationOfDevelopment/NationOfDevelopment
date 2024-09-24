@@ -1,5 +1,8 @@
 package com.sparta.nationofdevelopment.domain.auth.dto.request;
 
+import com.sparta.nationofdevelopment.common_entity.ErrorStatus;
+import com.sparta.nationofdevelopment.domain.common.exception.ApiException;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +30,7 @@ public class SignupRequestDto {
     // 이메일 형식 유효성 검사
     public boolean isEmailValid() {
         if(Strings.isBlank(email)) {
-            throw new IllegalArgumentException("이름은 공백 또는 null일 수 없습니다.");
+            throw new ApiException(ErrorStatus._INVALID_EMAIL_FORM);
         }
         /*
         ^:다음의 문자열로 시작함을 의미합니다
@@ -68,7 +71,7 @@ public class SignupRequestDto {
     // 비밀번호 형식 유효성 검사
     public boolean isPasswordValid() {
         if(Strings.isBlank(password)) {
-            throw new IllegalArgumentException("비밀번호는 공백 또는 null일 수 없습니다.");
+            throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
         }
         // 최소 8자, 대소문자, 숫자, 특수문자 각각 최소 1개 포함
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";

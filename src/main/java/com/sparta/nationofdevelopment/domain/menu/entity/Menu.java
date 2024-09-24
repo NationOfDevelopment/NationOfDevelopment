@@ -26,16 +26,12 @@ public class Menu {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    public Menu(MenuRequestDto requestDto) {
+    public Menu(MenuRequestDto requestDto, Store store) {
         this.menuName = requestDto.getMenuName();
         this.amount = requestDto.getAmount();
         this.category = requestDto.getCategory();
-    }
-
-    public Menu(String menuName, int amount, String category, Long storeId) {
-        this.menuName = menuName;
-        this.amount = amount;
-        this.category = category;
+        this.state = MenuStatus.SALE;
+        this.store = store;
     }
 
     public void update(MenuRequestDto requestDto) {

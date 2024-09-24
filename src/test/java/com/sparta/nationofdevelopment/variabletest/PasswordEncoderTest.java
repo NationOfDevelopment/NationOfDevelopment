@@ -16,7 +16,7 @@ public class PasswordEncoderTest {
     @Test
     void matches_메서드가_정상적으로_동작한다() {
 
-        String rawPassword = "password";
+        String rawPassword = "Multiverse22!";
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
         boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
