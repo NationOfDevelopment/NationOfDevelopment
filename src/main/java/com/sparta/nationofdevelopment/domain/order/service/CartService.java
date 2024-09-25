@@ -27,7 +27,6 @@ public class CartService {
 
     //장바구니 추가
     public CartDto createCart(MenuItemDto request, AuthUser authUser, long storeId) {
-        //이전에 장바구니에 담았던 가게랑 다르면 장바구니 삭제 후 다시 추가
         Users currentUser = Users.fromAuthUser(authUser);
         Menu foundmenu = finder.findMenuByMenuNameAndStoreId(request.getMenuName(),storeId);
 
