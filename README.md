@@ -71,7 +71,17 @@ REVIEW:리뷰를 등록하고 조회 할 수 있다.
 
 ----
 #### 소감과 아쉬웠던 점:
+
 ![image](https://github.com/user-attachments/assets/7f985014-7d5c-417f-8e5a-8e4153660cc4)
+
+----
+
+#### TestCoverage:
+
+![image](https://github.com/user-attachments/assets/250900a8-d8d7-4f58-aadc-529ca49723d8)
+
+----
+
 
 
 
