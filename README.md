@@ -16,39 +16,58 @@ Communication<p>
 
 
 ---
-회원가입	
+#### 주요기능: 
 
-#### API:/auth/signup	
+AUTH/USER:회원가입과 로그인을 할 수 있다,유저정보를 확인하고 수정할 수 있다. 계정을 탈퇴할 수 있다.
 
-RequestBody:
-```
-{ 
-  email:"email@gmail.com",
-  username:"nickname",
-  birthday:"2000-01-01",
-  password:"password",
-  userRole:”USER”
-}
-```
-ResponseBody:
-```
-{   
-"message": "회원 가입 완료",   "statusCode": 201,   
-"data":
-{    
-}
-}
-```
-+ 오류코드
-  + _DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST,400,"중복된 이메일입니다.")
-  + _INVALID_USER_ROLE(HttpStatus.BAD_REQUEST,400,"잘못된 유저권한 입니다.")
-  + _INVALID_EMAIL_FORM(HttpStatus.BAD_REQUEST,400,"이메일 형식이 올바르지 않습니다.")
-  + _INVALID_PASSWORD_FORM(HttpStatus.BAD_REQUEST,400,"비밀번호는 최소 8자 이상이어야 하며, 대소문자 포함 영문, 숫자, 특수문자를 최소 1글자씩 포함해야 합니다.")
-  + _INVALID_BIRTHDAY(HttpStatus.BAD_REQUEST,400,"잘못된 생일 값입니다")
-  + _INVALID_USER_NAME(HttpStatus.BAD_REQUEST,400 ,"유저이름은 최소 3자 이상,20자 이하여야 하며, 대소문자 포함 영문,숫자만 사용가능합니다." )
+STORE:USERROLE.OWNER인 경우에만 가게를 생성,수정,폐업 할 수 있다. 가게를 단건,다건 조회 할 수 있다.
 
-ResponseHeader:없음
+ORDER:메뉴를 장바구니에 추가하거나 삭제 할 수 있다. 장바구니 내용물을 조회 할 수 있다. 장바구니에 있는 메뉴들을 주문 할 수 있다. 주문의 상태를 변경 할 수 있다(사장님전용).
 
-RequestHeader:없음
+가게 별 주문 목록 조회, 유저별 주문 목록 조회를 할 수 있다. 주문 단건의 조회를 할 수 있다.
 
----
+MENU:메뉴를 
+
+
+
+
+----
+#### 역할분담:
+
+![image](https://github.com/user-attachments/assets/c596b887-670b-4886-ae1d-99c82d069b29)
+----
+#### 와이어프레임:https://www.figma.com/design/FYSf12lKNCR7P3FVMGpwQo/Untitled?node-id=7-2&node-type=canvas&t=JzRsJ30dffqcjpx4-0
+
+![image](https://github.com/user-attachments/assets/80fef7d5-63a5-4689-bfe8-a2d923eb4955)
+
+----
+
+#### API 명세서 : https://www.notion.so/teamsparta/8df95a5a37384fa089c59c14863cb89a?v=5478e12d67ba449299a94434ef4c9f7f&pvs=4
+
+
+----
+#### ERD : https://www.erdcloud.com/d/2pzXDAWHYvy4xB3K2
+
+![image](https://github.com/user-attachments/assets/1255b509-e124-4f68-922e-b08540d5d8f6)
+
+----
+#### 트러블슈팅:
+![image](https://github.com/user-attachments/assets/1f313a46-7224-42b3-a3de-eed2d607dbc0)
+
+![image](https://github.com/user-attachments/assets/b2931cdf-53d3-4869-8216-b65391b2a70f)
+
+![image](https://github.com/user-attachments/assets/c148fbb1-8ff1-465e-a27d-e9e6c4421a9c)
+
+![image](https://github.com/user-attachments/assets/dcd34c11-742b-4d64-9ebd-6b32b546812f)
+
+![image](https://github.com/user-attachments/assets/0865bd7c-378a-49ee-be82-6aabbcff9c7b)
+
+----
+#### 소감과 아쉬웠던 점:
+![image](https://github.com/user-attachments/assets/7f985014-7d5c-417f-8e5a-8e4153660cc4)
+
+
+
+
+
+
