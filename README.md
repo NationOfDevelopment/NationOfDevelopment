@@ -30,7 +30,9 @@ ORDER:메뉴를 장바구니에 추가하거나 삭제 할 수 있다. 장바구
 
 가게 별 주문 목록 조회, 유저별 주문 목록 조회를 할 수 있다. 주문 단건의 조회를 할 수 있다.
 
-MENU:메뉴를 
+MENU:메뉴를 등록,수정,삭제 할 수 있다.
+
+REVIEW:리뷰를 등록하고 조회 할 수 있다.
 
 
 
@@ -52,7 +54,8 @@ MENU:메뉴를
 ----
 #### ERD : https://www.erdcloud.com/d/2pzXDAWHYvy4xB3K2
 
-![image](https://github.com/user-attachments/assets/1255b509-e124-4f68-922e-b08540d5d8f6)
+![image](https://github.com/user-attachments/assets/e1479584-e355-4fc4-a66f-5ea766dd2c0e)
+
 
 ----
 #### 트러블슈팅:
